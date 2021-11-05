@@ -95,6 +95,7 @@ int write_usb(usb_gadget * ctx, int channel, unsigned char * buffer, int size)
 	struct pollfd pfd;
 #endif
 
+	PRINT_DEBUG("write_usb: channel %d", channel);
 	ret = -1;
 	if ( channel < EP_NB_OF_DESCRIPTORS )
 	{
@@ -102,26 +103,34 @@ int write_usb(usb_gadget * ctx, int channel, unsigned char * buffer, int size)
 		{
 
 #ifdef CONFIG_USB_NON_BLOCKING_WRITE
+			PRINT_DEBUG("write_usb: non blocking write");
 			fcntl(ctx->ep_handles[channel], F_SETFL, fcntl(ctx->ep_handles[channel], F_GETFL) | O_NONBLOCK);
 			do
 			{
 				pfd.fd = ctx->ep_handles[channel];
 				pfd.events = POLLOUT;
 
+				PRINT_DEBUG("write_usb: polling");
+		
+
 				ret = poll(&pfd, 1, 2000);
 				if(ret>0 && !mtp_context->cancel_req)
 				{
+					
+					PRINT_DEBUG("write_usb: writing");
 					ret = write (ctx->ep_handles[channel], buffer, size);
+					PRINT_DEBUG("write_usb: writen %d", ret);
 				}
 			}while( ret < 0 && ( (errno == EAGAIN) || (errno == EAGAIN) ) && !mtp_context->cancel_req );
 			fcntl(ctx->ep_handles[channel], F_SETFL, fcntl(ctx->ep_handles[channel], F_GETFL) & ~O_NONBLOCK);
 #else
-
+			PRINT_DEBUG("write_usb: blocking write");
 			ret = write (ctx->ep_handles[channel], buffer, size);
 
 #endif
 		}
 	}
+	PRINT_DEBUG("write_usb: returning");
 	return ret;
 }
 
@@ -147,7 +156,7 @@ void fill_config_descriptor(mtp_ctx * ctx , usb_gadget * usbctx,struct usb_confi
 	else
 		desc->iConfiguration = STRINGID_CONFIG_LS;
 	desc->bmAttributes = USB_CONFIG_ATT_ONE;
-	desc->bMaxPower = 1;
+	desc->bMaxPower = 0x80;
 
 	PRINT_DEBUG("fill_config_descriptor: (Total Len : %u + %d = %d)", (unsigned int) sizeof(struct usb_config_descriptor), total_size, desc->wTotalLength);
 	PRINT_DEBUG_BUF(desc, sizeof(struct usb_config_descriptor));
@@ -161,9 +170,17 @@ void fill_dev_descriptor(mtp_ctx * ctx, usb_gadget * usbctx,struct usb_device_de
 
 	desc->bLength = USB_DT_DEVICE_SIZE;
 	desc->bDescriptorType = USB_DT_DEVICE;
+
+	desc->bDeviceClass =    0x00;
+	desc->bDeviceSubClass = 0x00;
+	desc->bDeviceProtocol = 0x00;
+
+	/*
 	desc->bDeviceClass =    ctx->usb_cfg.usb_class;
 	desc->bDeviceSubClass = ctx->usb_cfg.usb_subclass;
 	desc->bDeviceProtocol = ctx->usb_cfg.usb_protocol;
+	*/
+
 	desc->idVendor =        ctx->usb_cfg.usb_vendor_id;
 	desc->idProduct =       ctx->usb_cfg.usb_product_id;
 	desc->bcdDevice =       ctx->usb_cfg.usb_dev_version; // Version
@@ -193,6 +210,7 @@ void fill_if_descriptor(mtp_ctx * ctx, usb_gadget * usbctx, struct usb_interface
 	desc->bInterfaceClass =    ctx->usb_cfg.usb_class;
 	desc->bInterfaceSubClass = ctx->usb_cfg.usb_subclass;
 	desc->bInterfaceProtocol = ctx->usb_cfg.usb_protocol;
+
 	if( ctx->usb_cfg.usb_functionfs_mode )
 	{
 		desc->iInterface = 1;

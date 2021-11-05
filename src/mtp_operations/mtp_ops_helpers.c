@@ -30,11 +30,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <pthread.h>
+
 
 #include "mtp.h"
 #include "mtp_helpers.h"
 #include "mtp_constant.h"
 #include "mtp_operations.h"
+#include "mtp_properties.h"
 #include "usb_gadget_fct.h"
 #include "inotify.h"
 
@@ -164,7 +170,7 @@ mtp_size send_file_data( mtp_ctx * ctx, fs_entry * entry,mtp_offset offset, mtp_
 
 		if( ctx->cancel_req )
 		{
-			PRINT_DEBUG("send_file_data : Cancelled ! Aborded...");
+			PRINT_DEBUG("send_file_data : Cancelled ! Aborted...");
 
 			// Force a ZLP
 			check_and_send_USB_ZLP(ctx , ctx->max_packet_size );
@@ -174,7 +180,7 @@ mtp_size send_file_data( mtp_ctx * ctx, fs_entry * entry,mtp_offset offset, mtp_
 		}
 		else
 		{
-			PRINT_DEBUG("send_file_data : Full transfert done !");
+			PRINT_DEBUG("send_file_data : Full transfer done !");
 
 			check_and_send_USB_ZLP(ctx , sizeof(MTP_PACKET_HEADER) + actualsize );
 		}
@@ -235,4 +241,185 @@ int delete_tree(mtp_ctx * ctx,uint32_t handle)
 	}
 
 	return ret;
+}
+
+uint32_t getPropValue(uint32_t prop_code)
+{
+        PRINT_DEBUG("getPropValue: Finding value for 0x%x", prop_code);
+        int i = 0;
+
+        while (dev_properties[i].prop_code != 0xFFFF )
+        {
+                if (dev_properties[i].prop_code == prop_code )
+                {
+                        break;
+                }
+                i++;
+        }
+
+        return dev_properties[i].current_value;
+}
+
+uint32_t getShutterSpeed()
+{
+        uint32_t ss = getPropValue(MTP_DEVICE_PROPERTY_EXPOSURE_TIME);
+        if (ss > 0)
+                return ss * 10;
+	//FIXME = how to correlate different methods of setting shutter speed
+        return 0;
+}
+
+void *capture (void *arg)
+{
+
+        char* storage_path;
+
+        pid_t child_pid;
+        char* tmpfilename;
+        char* ffilename;
+        char* filename;
+        //uint32_t ss;
+        //char* sspeed;
+
+        storage_path = (char *)arg;
+
+        pthread_detach(pthread_self());
+
+        tmpfilename = tempnam("/tmp", "DSC_");
+
+        child_pid = fork ();
+
+        //FIXME error handling
+        if (child_pid == -1)
+	{
+                PRINT_DEBUG("[%lu] capture parent : fork failed!", pthread_self());
+                return;
+	}
+
+        if (child_pid != 0) {
+                int status;
+                PRINT_DEBUG("[%lu] capture parent : waiting for  raspistill to finish", pthread_self());
+                waitpid(child_pid, &status, 0);
+
+                //FIXME error handling
+                PRINT_DEBUG("[%lu] capture parent : raspistill finished with %d", pthread_self(), status);
+                if (!status) {
+			// Let's copy the temporary file into the emulated SDCARD storage area
+			filename = tempnam(storage_path, "DSC_");
+			asprintf(&ffilename, "%s.jpg", filename);
+			PRINT_DEBUG("[%lu] capture parent : Renaming %s to %s", pthread_self(),  tmpfilename, ffilename);
+			status = rename(tmpfilename, ffilename);
+			// ObjectAdded and CaptureComplete are sent by the inotify handler once the file appears on the storage root
+                }
+        } else {
+                PRINT_DEBUG("[%lu] capture child : Saving to %s", pthread_self(), tmpfilename);
+
+                //ss = getShutterSpeed();
+                //asprintf(&sspeed, "%d", ss);
+
+                char* arg_list[] = {
+                                "raspistill",
+                                "-mm",          // metering mode
+                                "average",      // mode
+                                "-th",          // thumbnail
+                                "none",         //  - none
+                                //"-raw",               // Include raw data at end of jpg
+                                "-q",           // JPEG quality
+                                "100",          //  - 100%
+//                              "-ex",          // auto exposure mode
+//                              "off",          //  - off
+                                "-fli",         // flicker reduction
+                                "off",          //  - off
+                                //"-awb",         // auto white balance
+                                //"off",          //  - off
+                                //"--awbgains",   // auto white balance gains
+                                //"2,1.53",       //  - what's this?
+                                "-drc",         // Dynamic Range Compression
+                                "off",          //  - off
+                                "-md",          // Mode
+                                "2",            //  - 3 = 4056x3040, 2 = 2028x1520 2x2 binned
+                                "-n",           // No preview
+                                "-bm",          // Burst capture mode
+                                "-st",          // Force recomputation of statistics on stills capture pass
+                                "-dg",          // Digital gain
+                                "1",            //  - 1
+                                "-ag",          // Analogue gain
+                                "16",           //  - 16
+                                "-o",
+                                tmpfilename,
+                                NULL
+                        };
+                int i = 0;
+                while(arg_list[i] != NULL) {
+                        PRINT_DEBUG("[%lu] capture child %d = %s", pthread_self(), i, arg_list[i]);
+                        i++;
+                }
+
+                execvp ("raspistill", arg_list);
+                abort ();
+        }
+}
+
+uint32_t registerFiles(mtp_ctx * ctx, uint32_t storageid, uint32_t parent_handle)
+{
+        fs_entry * entry;
+        char * full_path;
+        char * tmp_str;
+        int nb_of_handles;
+
+        tmp_str = NULL;
+        full_path = NULL;
+        entry = NULL;
+
+        if(parent_handle && parent_handle!=0xFFFFFFFF)
+        {
+                entry = get_entry_by_handle(ctx->fs_db, parent_handle);
+                if(entry)
+                {
+                        tmp_str = build_full_path(ctx->fs_db, mtp_get_storage_root(ctx, entry->storage_id), entry);
+                        full_path = tmp_str;
+                }
+        }
+        else
+        {
+                // root folder
+                parent_handle = 0x00000000;
+                full_path = mtp_get_storage_root(ctx,storageid);
+                entry = get_entry_by_handle_and_storageid(ctx->fs_db, parent_handle, storageid);
+        }
+
+        nb_of_handles = 0;
+
+        if( full_path )
+        {
+                // Count the number of files...
+                scan_and_add_folder(ctx->fs_db, full_path, parent_handle, storageid);
+                init_search_handle(ctx->fs_db, parent_handle, storageid);
+
+                while( get_next_child_handle(ctx->fs_db) )
+                {
+                        nb_of_handles++;
+                }
+
+                PRINT_DEBUG("registerFiles - %d objects found",nb_of_handles);
+
+                // Restart
+                init_search_handle(ctx->fs_db, parent_handle, storageid);
+
+                // Register a watch point.
+                if( entry )
+                {
+                        if ( entry->flags & ENTRY_IS_DIR )
+                        {
+                                PRINT_DEBUG("registerFiles : Adding watch for %s", full_path);
+                                entry->watch_descriptor = inotify_handler_addwatch( ctx, full_path );
+                        }
+                }
+
+                if (tmp_str)
+                        free(tmp_str);
+        }
+
+        return nb_of_handles;
+
 }

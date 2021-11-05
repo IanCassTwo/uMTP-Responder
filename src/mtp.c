@@ -83,6 +83,7 @@ mtp_ctx * mtp_init_responder()
 
 		inotify_handler_init( ctx );
 		msgqueue_handler_init( ctx );
+		ctx->InitiateCaptureTxId = 0x00000000;
 
 		PRINT_DEBUG("init_mtp_responder : Ok !");
 
@@ -444,13 +445,14 @@ int check_handle_access( mtp_ctx * ctx, fs_entry * entry, uint32_t handle, int w
 	return 0;
 }
 
-int process_in_packet(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, int rawsize)
+int process_in_packet(mtp_ctx * ctx, MTP_PACKET_HEADER * mtp_packet_hdr, int rawsize)
 {
 	uint32_t params[5];
 	int params_size;
 	uint32_t response_code;
 	int size;
 
+	// Return parameters
 	params[0] = 0x000000;
 	params[1] = 0x000000;
 	params[2] = 0x000000;
@@ -499,6 +501,10 @@ int process_in_packet(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, int raws
 			response_code = mtp_op_GetObjectInfo(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
 		break;
 
+		case MTP_OPERATION_INITIATE_CAPTURE:
+			response_code = mtp_op_InitiateCapture(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
+		break;
+
 		case MTP_OPERATION_GET_PARTIAL_OBJECT_64:
 		case MTP_OPERATION_GET_PARTIAL_OBJECT:
 			response_code = mtp_op_GetPartialObject(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
@@ -537,6 +543,10 @@ int process_in_packet(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, int raws
 			response_code = mtp_op_SetObjectPropValue(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
 		break;
 
+		case MTP_OPERATION_SET_DEVICE_PROP_VALUE:
+			response_code = mtp_op_SetDevicePropValue(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
+		break;
+
 		case MTP_OPERATION_GET_OBJECT_PROP_LIST:
 			response_code = mtp_op_GetObjectPropList(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
 		break;
@@ -556,6 +566,33 @@ int process_in_packet(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, int raws
 		case MTP_OPERATION_TRUNCATE_OBJECT :
 			response_code = mtp_op_TruncateObject(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
 		break;
+
+		case MTP_OPERATION_NIKON_CHANGE_CAMERA_MODE :
+			response_code = mtp_op_NikonChangeCameraMode(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
+		break;
+
+		case MTP_OPERATION_NIKON_DELETE_IMAGES_IN_SDRAM :
+			response_code = mtp_op_NikonDeleteImagesInSDRam(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
+		break;
+
+		case MTP_OPERATION_NIKON_GET_VENDOR_PROP_CODES :
+			response_code = mtp_op_NikonGetVendorPropCodes(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
+		break;
+
+		case MTP_OPERATION_NIKON_AF_AND_CAPTURE_REC_IN_SDRAM :
+		case MTP_OPERATION_NIKON_INITIATE_CAPTURE_REC_IN_SDRAM :
+			response_code = mtp_op_NikonInitiateCaptureRecInSDRAM(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
+		break;
+
+		case MTP_OPERATION_NIKON_GET_EVENT :
+			response_code = mtp_op_NikonGetEvent(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
+		break;
+
+		case MTP_OPERATION_NIKON_DEVICE_READY :
+			response_code = mtp_op_NikonDeviceReady(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
+		break;
+
+
 
 		default:
 
@@ -840,13 +877,13 @@ uint32_t mtp_get_storage_flags(mtp_ctx * ctx, uint32_t storage_id)
 	return 0xFFFFFFFF;
 }
 
-int mtp_push_event(mtp_ctx * ctx, uint32_t event, int nbparams, uint32_t * parameters )
+int mtp_push_event(mtp_ctx * ctx, uint32_t event, uint32_t transaction, int nbparams, uint32_t * parameters )
 {
 	unsigned char event_buffer[64];
 	int size;
 	int ret;
 
-	size = build_event_dataset( ctx, event_buffer, sizeof(event_buffer), event , ctx->session_id, 0x00000000, nbparams, parameters);
+	size = build_event_dataset( ctx, event_buffer, sizeof(event_buffer), event , ctx->session_id, transaction, nbparams, parameters);
 	if(size < 0)
 		return -1;
 
@@ -859,3 +896,4 @@ int mtp_push_event(mtp_ctx * ctx, uint32_t event, int nbparams, uint32_t * param
 
 	return ret;
 }
+

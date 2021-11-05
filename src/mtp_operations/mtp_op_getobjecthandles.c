@@ -32,6 +32,7 @@
 #include "mtp.h"
 #include "mtp_helpers.h"
 #include "mtp_constant.h"
+#include "mtp_ops_helpers.h"
 #include "mtp_operations.h"
 #include "usb_gadget_fct.h"
 #include "inotify.h"
@@ -45,10 +46,8 @@ uint32_t mtp_op_GetObjectHandles(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hd
 	uint32_t parent_handle;
 	int handle_index;
 	int nb_of_handles;
-	fs_entry * entry;
-	char * full_path;
-	char * tmp_str;
 	int sz;
+	fs_entry * entry;
 
 	if(!ctx->fs_db)
 		return MTP_RESPONSE_SESSION_NOT_OPEN;
@@ -74,57 +73,7 @@ uint32_t mtp_op_GetObjectHandles(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hd
 		return MTP_RESPONSE_INVALID_STORAGE_ID;
 	}
 
-	tmp_str = NULL;
-	full_path = NULL;
-	entry = NULL;
-
-	if(parent_handle && parent_handle!=0xFFFFFFFF)
-	{
-		entry = get_entry_by_handle(ctx->fs_db, parent_handle);
-		if(entry)
-		{
-			tmp_str = build_full_path(ctx->fs_db, mtp_get_storage_root(ctx, entry->storage_id), entry);
-			full_path = tmp_str;
-		}
-	}
-	else
-	{
-		// root folder
-		parent_handle = 0x00000000;
-		full_path = mtp_get_storage_root(ctx,storageid);
-		entry = get_entry_by_handle_and_storageid(ctx->fs_db, parent_handle, storageid);
-	}
-
-	nb_of_handles = 0;
-
-	if( full_path )
-	{
-		// Count the number of files...
-		scan_and_add_folder(ctx->fs_db, full_path, parent_handle, storageid);
-		init_search_handle(ctx->fs_db, parent_handle, storageid);
-
-		while( get_next_child_handle(ctx->fs_db) )
-		{
-			nb_of_handles++;
-		}
-
-		PRINT_DEBUG("MTP_OPERATION_GET_OBJECT_HANDLES - %d objects found",nb_of_handles);
-
-		// Restart
-		init_search_handle(ctx->fs_db, parent_handle, storageid);
-
-		// Register a watch point.
-		if( entry )
-		{
-			if ( entry->flags & ENTRY_IS_DIR )
-			{
-				entry->watch_descriptor = inotify_handler_addwatch( ctx, full_path );
-			}
-		}
-
-		if (tmp_str)
-			free(tmp_str);
-	}
+	nb_of_handles = registerFiles(ctx, storageid, parent_handle);
 
 	// Update packet size
 	poke32(ctx->wrbuffer, 0, ctx->usb_wr_buffer_max_size, sizeof(MTP_PACKET_HEADER) + ((1+nb_of_handles)*4) );

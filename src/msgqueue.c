@@ -114,7 +114,7 @@ void* msgqueue_thread( void* arg )
 					ctx->storages[store_index].flags &= ~UMTP_STORAGE_NOTMOUNTED;
 
 					handle[0] = ctx->storages[store_index].storage_id;
-					mtp_push_event( ctx, MTP_EVENT_STORE_ADDED, 1, (uint32_t *)&handle );
+					mtp_push_event( ctx, MTP_EVENT_STORE_ADDED, 0xffffffff, 1, (uint32_t *)&handle );
 
 					pthread_mutex_unlock( &ctx->inotify_mutex );
 				}
@@ -150,7 +150,7 @@ void* msgqueue_thread( void* arg )
 					ctx->storages[store_index].flags |= UMTP_STORAGE_NOTMOUNTED;
 
 					handle[0] = ctx->storages[store_index].storage_id;
-					mtp_push_event( ctx, MTP_EVENT_STORE_REMOVED, 1, (uint32_t *)&handle );
+					mtp_push_event( ctx, MTP_EVENT_STORE_REMOVED, 0xffffffff, 1, (uint32_t *)&handle );
 
 					pthread_mutex_unlock( &ctx->inotify_mutex );
 				}

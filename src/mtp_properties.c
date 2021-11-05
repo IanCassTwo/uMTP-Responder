@@ -44,6 +44,24 @@
 
 #include "logs_out.h"
 
+formats_property capture_properties[]=
+{   // prop_code                       data_type         getset    default value          group code
+	{ MTP_FORMAT_EXIF_JPEG    , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
+												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
+												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED, MTP_PROPERTY_DESCRIPTION, MTP_PROPERTY_WIDTH,
+												MTP_PROPERTY_HEIGHT, MTP_PROPERTY_DATE_AUTHORED,
+												0xFFFF}
+	},
+	{ MTP_FORMAT_DEFINED    , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
+												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
+												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED, MTP_PROPERTY_DESCRIPTION, MTP_PROPERTY_WIDTH,
+												MTP_PROPERTY_HEIGHT, MTP_PROPERTY_DATE_AUTHORED,
+												0xFFFF}
+	},
+	{ 0xFFFF  , (uint16_t[]){ 0xFFFF } }
+
+};
+
 formats_property fmt_properties[]=
 {   // prop_code                       data_type         getset    default value          group code
 	{ MTP_FORMAT_UNDEFINED    , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
@@ -55,45 +73,8 @@ formats_property fmt_properties[]=
 												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
 												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,
 												0xFFFF}
-	}
-#if 0
-	{ MTP_FORMAT_TEXT         , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,
-												0xFFFF}
 	},
-	{ MTP_FORMAT_HTML         , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_MP4_CONTAINER, (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED, MTP_PROPERTY_ARTIST, MTP_PROPERTY_ALBUM_NAME,
-												MTP_PROPERTY_DURATION, MTP_PROPERTY_DESCRIPTION, MTP_PROPERTY_WIDTH, MTP_PROPERTY_HEIGHT, MTP_PROPERTY_DATE_AUTHORED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_3GP_CONTAINER, (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED, MTP_PROPERTY_ARTIST, MTP_PROPERTY_ALBUM_NAME,
-												MTP_PROPERTY_DURATION, MTP_PROPERTY_DESCRIPTION, MTP_PROPERTY_WIDTH, MTP_PROPERTY_HEIGHT, MTP_PROPERTY_DATE_AUTHORED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_WAV          , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,MTP_PROPERTY_ARTIST,MTP_PROPERTY_ALBUM_NAME,
-												MTP_PROPERTY_ALBUM_ARTIST, MTP_PROPERTY_TRACK, MTP_PROPERTY_ORIGINAL_RELEASE_DATE, MTP_PROPERTY_GENRE, MTP_PROPERTY_COMPOSER,
-												MTP_PROPERTY_AUDIO_WAVE_CODEC, MTP_PROPERTY_BITRATE_TYPE, MTP_PROPERTY_AUDIO_BITRATE, MTP_PROPERTY_NUMBER_OF_CHANNELS,MTP_PROPERTY_SAMPLE_RATE,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_MP3          , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,MTP_PROPERTY_ARTIST,MTP_PROPERTY_ALBUM_NAME,
-												MTP_PROPERTY_ALBUM_ARTIST, MTP_PROPERTY_TRACK, MTP_PROPERTY_ORIGINAL_RELEASE_DATE, MTP_PROPERTY_GENRE, MTP_PROPERTY_COMPOSER,
-												MTP_PROPERTY_AUDIO_WAVE_CODEC, MTP_PROPERTY_BITRATE_TYPE, MTP_PROPERTY_AUDIO_BITRATE, MTP_PROPERTY_NUMBER_OF_CHANNELS,MTP_PROPERTY_SAMPLE_RATE,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_MPEG         , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
+	{ MTP_FORMAT_AVI          , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
 												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
 												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED, MTP_PROPERTY_ARTIST, MTP_PROPERTY_ALBUM_NAME,
 												MTP_PROPERTY_DURATION, MTP_PROPERTY_DESCRIPTION, MTP_PROPERTY_WIDTH, MTP_PROPERTY_HEIGHT, MTP_PROPERTY_DATE_AUTHORED,
@@ -105,107 +86,12 @@ formats_property fmt_properties[]=
 												MTP_PROPERTY_HEIGHT, MTP_PROPERTY_DATE_AUTHORED,
 												0xFFFF}
 	},
-	{ MTP_FORMAT_BMP          , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
+	{ MTP_FORMAT_DEFINED    , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
 												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
 												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED, MTP_PROPERTY_DESCRIPTION, MTP_PROPERTY_WIDTH,
 												MTP_PROPERTY_HEIGHT, MTP_PROPERTY_DATE_AUTHORED,
 												0xFFFF}
 	},
-	{ MTP_FORMAT_GIF          , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED, MTP_PROPERTY_DESCRIPTION, MTP_PROPERTY_WIDTH,
-												MTP_PROPERTY_HEIGHT, MTP_PROPERTY_DATE_AUTHORED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_JFIF         , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED, MTP_PROPERTY_DESCRIPTION, MTP_PROPERTY_WIDTH,
-												MTP_PROPERTY_HEIGHT, MTP_PROPERTY_DATE_AUTHORED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_WMA          , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED, MTP_PROPERTY_ARTIST, MTP_PROPERTY_ALBUM_NAME,
-												MTP_PROPERTY_ALBUM_ARTIST, MTP_PROPERTY_TRACK, MTP_PROPERTY_ORIGINAL_RELEASE_DATE, MTP_PROPERTY_DURATION, MTP_PROPERTY_DESCRIPTION,
-												MTP_PROPERTY_GENRE, MTP_PROPERTY_COMPOSER, MTP_PROPERTY_AUDIO_WAVE_CODEC, MTP_PROPERTY_BITRATE_TYPE, MTP_PROPERTY_AUDIO_BITRATE,
-												MTP_PROPERTY_NUMBER_OF_CHANNELS, MTP_PROPERTY_SAMPLE_RATE,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_OGG          , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED, MTP_PROPERTY_ARTIST, MTP_PROPERTY_ALBUM_NAME,
-												MTP_PROPERTY_ALBUM_ARTIST, MTP_PROPERTY_TRACK, MTP_PROPERTY_ORIGINAL_RELEASE_DATE, MTP_PROPERTY_DURATION, MTP_PROPERTY_DESCRIPTION,
-												MTP_PROPERTY_GENRE, MTP_PROPERTY_COMPOSER, MTP_PROPERTY_AUDIO_WAVE_CODEC, MTP_PROPERTY_BITRATE_TYPE, MTP_PROPERTY_AUDIO_BITRATE,
-												MTP_PROPERTY_NUMBER_OF_CHANNELS, MTP_PROPERTY_SAMPLE_RATE,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_AAC          , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED, MTP_PROPERTY_ARTIST, MTP_PROPERTY_ALBUM_NAME,
-												MTP_PROPERTY_ALBUM_ARTIST, MTP_PROPERTY_TRACK, MTP_PROPERTY_ORIGINAL_RELEASE_DATE, MTP_PROPERTY_DURATION, MTP_PROPERTY_DESCRIPTION,
-												MTP_PROPERTY_GENRE, MTP_PROPERTY_COMPOSER, MTP_PROPERTY_AUDIO_WAVE_CODEC, MTP_PROPERTY_BITRATE_TYPE, MTP_PROPERTY_AUDIO_BITRATE,
-												MTP_PROPERTY_NUMBER_OF_CHANNELS, MTP_PROPERTY_SAMPLE_RATE,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_ABSTRACT_AV_PLAYLIST, (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_WPL_PLAYLIST,  (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_M3U_PLAYLIST,  (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_PLS_PLAYLIST,  (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_XML_DOCUMENT,  (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_FLAC        ,  (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_AVI          , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED, MTP_PROPERTY_ARTIST, MTP_PROPERTY_ALBUM_NAME,
-												MTP_PROPERTY_DURATION, MTP_PROPERTY_DESCRIPTION, MTP_PROPERTY_WIDTH, MTP_PROPERTY_HEIGHT, MTP_PROPERTY_DATE_AUTHORED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_ASF          , (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED, MTP_PROPERTY_ARTIST, MTP_PROPERTY_ALBUM_NAME,
-												MTP_PROPERTY_DURATION, MTP_PROPERTY_DESCRIPTION, MTP_PROPERTY_WIDTH, MTP_PROPERTY_HEIGHT, MTP_PROPERTY_DATE_AUTHORED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_MS_WORD_DOCUMENT, (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_MS_EXCEL_SPREADSHEET, (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,
-												0xFFFF}
-	},
-	{ MTP_FORMAT_MS_POWERPOINT_PRESENTATION, (uint16_t[]){   MTP_PROPERTY_STORAGE_ID, MTP_PROPERTY_OBJECT_FORMAT, MTP_PROPERTY_PROTECTION_STATUS, MTP_PROPERTY_OBJECT_SIZE,
-												MTP_PROPERTY_OBJECT_FILE_NAME, MTP_PROPERTY_DATE_MODIFIED, MTP_PROPERTY_PARENT_OBJECT, MTP_PROPERTY_PERSISTENT_UID,
-												MTP_PROPERTY_NAME, MTP_PROPERTY_DISPLAY_NAME, MTP_PROPERTY_DATE_CREATED,
-												0xFFFF}
-	}
-#endif
-	,
 
 	{ 0xFFFF  , (uint16_t[]){ 0xFFFF } }
 
@@ -273,13 +159,230 @@ profile_property properties[]=
 };
 
 profile_property dev_properties[]=
-{   // prop_code                                           data_type         getset    default value          group code
-	//{MTP_DEVICE_PROPERTY_SYNCHRONIZATION_PARTNER,          MTP_TYPE_UINT32,    0x00,   0x00000000           , 0x000000000 , 0x00 },
-	//{MTP_DEVICE_PROPERTY_IMAGE_SIZE,                       MTP_TYPE_UINT32,    0x00,   0x00000000           , 0x000000000 , 0x00 },
-	{MTP_DEVICE_PROPERTY_BATTERY_LEVEL,                    MTP_TYPE_UINT16,    0x00,   0x00000000           , 0x000000000 , 0x00 },
-	{MTP_DEVICE_PROPERTY_DEVICE_FRIENDLY_NAME,             MTP_TYPE_STR,       0x00,   0x00000000           , 0x000000000 , 0x00 },
+{
+	{
+		prop_code: MTP_DEVICE_PROPERTY_BATTERY_LEVEL,
+		data_type: MTP_TYPE_UINT8,
+		getset: 0x00,
+		default_value: 0x64,
+		current_value: 0x3C,
+		form_flag: 0x01,
+		format_id: MTP_TYPE_UINT8,
+		nbparam: 3,
+		extra: {0x00, 0x64, 0x01}
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_FOCAL_LENGTH,
+		data_type: MTP_TYPE_UINT16,
+		getset: 0x00,
+		default_value: 0x00,
+		current_value: 0x00,
+		form_flag: 0x00,
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_EXPOSURE_METERING_MODE,
+		data_type: MTP_TYPE_UINT16,
+		getset: 0x01,
+		default_value: 0x02,
+		current_value: 0x01,
+		form_flag: 0x02,
+		format_id: MTP_TYPE_UINT16,
+		nbparam: 3,
+		extra: {2,3,4}
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_WHITE_BALANCE,
+		data_type: MTP_TYPE_UINT16,
+		getset: 0x01,
+		default_value: 0x02,
+		current_value: 0x02,
+		form_flag: 0x02,
+		format_id: MTP_TYPE_UINT16,
+		nbparam: 9,
+		extra: {2, 4, 5, 6, 7, 32784, 32785, 32786, 32787}
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_STILL_CAPTURE_MODE,
+		data_type: MTP_TYPE_UINT16,
+		getset: 0x01,
+		default_value: 0x01,
+		current_value: 0x01,
+		form_flag: 0x02,
+		format_id: MTP_TYPE_UINT16,
+		nbparam: 6,
+		extra: {1, 2, 32784, 32785, 32788, 32789}
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_EXPOSURE_PROGRAM_MODE,
+		data_type: MTP_TYPE_UINT16,
+		getset: 0x01,
+		default_value: 0x02,
+		current_value: 0x01,
+		form_flag: 0x02,
+		format_id: MTP_TYPE_UINT16,
+		nbparam: 2,
+		extra: {1, 2}
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_COMPRESSION_SETTING,
+		data_type: MTP_TYPE_UINT8,
+		getset: 0x01,
+		default_value: 0x01,
+		current_value: 0x04,
+		form_flag: 0x02,
+		format_id: MTP_TYPE_UINT8,
+		nbparam: 7,
+		extra: {0x00, 0x01, 0x02, 0x04, 0x05, 0x06, 0x07}
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_EXPOSURE_INDEX,
+		data_type: MTP_TYPE_UINT16,
+		getset: 0x01,
+		default_value: 200,
+		current_value: 3200,
+		form_flag: 0x02,
+		format_id: MTP_TYPE_UINT16,
+		nbparam: 13,
+		extra: {100, 125, 160, 200, 250, 320, 400, 500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400, 0xffff}
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_EXPOSURE_TIME,
+		data_type: MTP_TYPE_UINT32,
+		getset: 0x01,
+		default_value: 0x00000028,
+		current_value: 0x00000028,
+		form_flag: 0x02,
+		format_id: MTP_TYPE_UINT32,
+		nbparam: 60,
+		extra: {1, 2, 3, 4, 5, 6, 8, 10, 12, 13, 15, 20, 25, 28, 31, 40, 50, 55, 62, 80, 100, 111, 125, 166, 200, 222, 250, 333, 400, 500, 666, 769, 1000, 1250, 1666, 2000, 2500, 3333, 4000, 5000, 6250, 6666, 7692, 10000, 13000, 15000, 16000, 20000, 25000, 30000, 40000, 50000, 60000, 80000, 100000, 130000, 150000, 200000, 250000, 300000}
+	},
 
-	{0xFFFF,                                               MTP_TYPE_UINT32,    0x00,   0x00000000           , 0x000000000 , 0x00 }
+	// String types are VERY painful. Work out how to make them easier
+	{
+		prop_code: MTP_DEVICE_PROPERTY_IMAGE_SIZE,
+		data_type: MTP_TYPE_STR,
+		getset: 0x01,
+		default_value_str: {0xA, 0x33, 0x00, 0x32, 0x00, 0x38, 0x00, 0x30, 0x00, 0x78, 0x00, 0x32, 0x00, 0x34, 0x00, 0x36, 0x00, 0x34, 0x00, 0x00, 0x00},
+		current_value_str: {0xA, 0x33, 0x00, 0x32, 0x00, 0x38, 0x00, 0x30, 0x00, 0x78, 0x00, 0x32, 0x00, 0x34, 0x00, 0x36, 0x00, 0x34, 0x00, 0x00, 0x00},
+		form_flag: 0x02,
+		format_id: MTP_TYPE_STR,
+		nbparam: 44, 
+		extra: {0x02, 0x00, 0xA, 0x32, 0x00, 0x30, 0x00, 0x32, 0x00, 0x38, 0x00, 0x78, 0x00, 0x31, 0x00, 0x35, 0x00, 0x32, 0x00, 0x30, 0x00, 0x00, 0x00, 0xA, 0x33, 0x00, 0x32, 0x00, 0x38, 0x00, 0x30, 0x00, 0x78, 0x00, 0x32, 0x00, 0x34, 0x00, 0x36, 0x00, 0x34, 0x00, 0x00, 0x00},
+	},
+
+	{
+		prop_code: MTP_DEVICE_PROPERTY_NIKON_RECORDINGMEDIA,
+		data_type: MTP_TYPE_UINT8,
+		getset: 0x01,
+		default_value: 0x0,
+		current_value: 0x0,
+		form_flag: 0x01,
+		format_id: MTP_TYPE_UINT8,
+		nbparam: 3,
+		extra: {0x00, 0x1, 0x01} 
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_NIKON_AFMODESELECT,
+		data_type: MTP_TYPE_UINT8,
+		getset: 0x01,
+		default_value: 0x02,
+		current_value: 0x03,
+		form_flag: 0x01,
+		format_id: MTP_TYPE_UINT8,
+		nbparam: 3,
+		extra: {0x00, 0x04, 0x01}
+	},
+	/*
+	{
+		prop_code: MTP_DEVICE_PROPERTY_NIKON_SHUTTERSPEED,
+		data_type: MTP_TYPE_UINT32,
+		getset: 0x01,
+		default_value: 69536,
+		current_value: 65696,
+		form_flag: 0x02,
+		format_id: MTP_TYPE_UINT32,
+		nbparam: 13,
+		extra: {69536, 68736, 68036, 67536, 67136, 66786, 66536, 66336, 66176, 66036, 65936, 65856, 65786, 65736, 65696, 65661, 65636, 65616, 65596, 65586, 65576, 65566, 65561, 65556, 65551, 65549, 65546, 65544, 65542, 65541, 65540, 65539, 655385, 65538, 655376, 655373, 65537, 851978, 1048586, 131073, 1638410, 196609, 262145, 327681, 393217, 524289, 655361, 851969, 983041, 1310721, 1638401, 1966081, 4294967295}
+	},
+	*/
+	{
+		prop_code: MTP_DEVICE_PROPERTY_NIKON_LIVEVIEWSTATUS,
+		data_type: MTP_TYPE_UINT8,
+		getset: 0x00,
+		default_value: 0x0,
+		current_value: 0x0,
+		form_flag: 0x01,
+		format_id: MTP_TYPE_UINT8,
+		nbparam: 3,
+		extra: {0x00, 0x1, 0x01} 
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_NIKON_AFMODESELECT,
+		data_type: MTP_TYPE_UINT8,
+		getset: 0x01,
+		default_value: 0x2,
+		current_value: 0x3,
+		form_flag: 0x01,
+		format_id: MTP_TYPE_UINT8,
+		nbparam: 3,
+		extra: {0x00, 0x4, 0x01} 
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_NIKON_RECORDINGMEDIA,
+		data_type: MTP_TYPE_UINT8,
+		getset: 0x01,
+		default_value: 0x0,
+		current_value: 0x1,
+		form_flag: 0x01,
+		format_id: MTP_TYPE_UINT8,
+		nbparam: 3,
+		extra: {0x00, 0x1, 0x01} 
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_NIKON_WBCOLORTEMP,
+		data_type: MTP_TYPE_UINT8,
+		getset: 0x01,
+		default_value: 0x20,
+		current_value: 0x21,
+		form_flag: 0x01,
+		format_id: MTP_TYPE_UINT8,
+		nbparam: 3,
+		extra: {0x01, 0x1e, 0x01} 
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_NIKON_USBSPEED,
+		data_type: MTP_TYPE_UINT8,
+		getset: 0x00,
+		default_value: 0x01,
+		current_value: 0x01,
+		form_flag: 0x00,
+	},
+	{
+		prop_code: MTP_DEVICE_PROPERTY_NIKON_EXTERNALDCIN,
+		data_type: MTP_TYPE_UINT8,
+		getset: 0x01,
+		default_value: 0x00,
+		current_value: 0x00,
+		form_flag: 0x01,
+		format_id: MTP_TYPE_UINT8,
+		nbparam: 3,
+		extra: {0x00, 0x01, 0x01}
+	},
+	{
+		prop_code: 0xd1a8,
+		data_type: MTP_TYPE_UINT16,
+		getset: 0x01,
+		default_value: 73536,
+		current_value: 73536,
+		form_flag: 0x02,
+		format_id: MTP_TYPE_UINT16,
+		nbparam: 22,
+		extra: {73536,71936,70536,69536,68736,68036,67536,67136,66786,66536,66336,66176,66036,65936,65856,65786,65736,65696,65661,65636,65616,65596}
+	},
+
+	{
+		prop_code: 0xFFFF
+	}
 };
 
 int build_properties_dataset(mtp_ctx * ctx,void * buffer, int maxsize,uint32_t property_id,uint32_t format_id)
@@ -322,32 +425,39 @@ int build_properties_dataset(mtp_ctx * ctx,void * buffer, int maxsize,uint32_t p
 
 		switch(properties[i].data_type)
 		{
+
 			case MTP_TYPE_STR:
 			case MTP_TYPE_UINT8:
 				ofs = poke08(buffer, ofs, maxsize, properties[i].default_value);                         // DefaultValue
 			break;
+
 			case MTP_TYPE_UINT16:
 				ofs = poke16(buffer, ofs, maxsize, properties[i].default_value);                         // DefaultValue
 			break;
+
 			case MTP_TYPE_UINT32:
 				ofs = poke32(buffer, ofs, maxsize, properties[i].default_value);                         // DefaultValue
 			break;
+
 			case MTP_TYPE_UINT64:
 				ofs = poke32(buffer, ofs, maxsize, properties[i].default_value & 0xFFFFFFFF);            // DefaultValue
 				ofs = poke32(buffer, ofs, maxsize, properties[i].default_value >> 32);
 			break;
+
 			case MTP_TYPE_UINT128:
 				for(j=0;j<4;j++)
 				{
 					ofs = poke32(buffer, ofs, maxsize, properties[i].default_value);
 				}
 			break;
+
 			default:
 				PRINT_ERROR("build_properties_dataset : Unsupported data type : 0x%.4X", properties[i].data_type );
 			break;
+
 		}
 
-		ofs = poke32(buffer, ofs, maxsize, properties[i].group_code);           // Group code
+		ofs = poke32(buffer, ofs, maxsize, properties[i].current_value);        // Current value
 		ofs = poke08(buffer, ofs, maxsize, properties[i].form_flag);            // Form flag
 	}
 
@@ -356,7 +466,8 @@ int build_properties_dataset(mtp_ctx * ctx,void * buffer, int maxsize,uint32_t p
 
 int build_device_properties_dataset(mtp_ctx * ctx,void * buffer, int maxsize,uint32_t property_id)
 {
-	int ofs,i;
+	int ofs,i, j, a;
+	uint8_t l;
 
 	ofs = 0;
 
@@ -376,37 +487,84 @@ int build_device_properties_dataset(mtp_ctx * ctx,void * buffer, int maxsize,uin
 
 		switch(dev_properties[i].data_type)
 		{
+
 			case MTP_TYPE_STR:
+				// default value
+				j = 0;
+				l = dev_properties[i].default_value_str[0];
+				ofs = poke08(buffer, ofs, maxsize, l);
+				for (j = 1; j < (l * 2) + 1; j++) {
+					ofs = poke08(buffer, ofs, maxsize, dev_properties[i].default_value_str[j]);
+				}
+
+				//current value
+				j = 0;
+				l = dev_properties[i].current_value_str[0];
+				ofs = poke08(buffer, ofs, maxsize, l);
+				for (j = 1; j < (l * 2) + 1; j++) {
+					ofs = poke08(buffer, ofs, maxsize, dev_properties[i].current_value_str[j]);
+				}
+
 			case MTP_TYPE_UINT8:
 				ofs = poke08(buffer, ofs, maxsize, dev_properties[i].default_value);
-				ofs = poke08(buffer, ofs, maxsize, dev_properties[i].default_value);
+				ofs = poke08(buffer, ofs, maxsize, dev_properties[i].current_value);     
 			break;
 
 			case MTP_TYPE_UINT16:
 				ofs = poke16(buffer, ofs, maxsize, dev_properties[i].default_value);
-				ofs = poke16(buffer, ofs, maxsize, dev_properties[i].default_value);
+				ofs = poke16(buffer, ofs, maxsize, dev_properties[i].current_value);     
 			break;
 
 			case MTP_TYPE_UINT32:
 				ofs = poke32(buffer, ofs, maxsize, dev_properties[i].default_value);
-				ofs = poke32(buffer, ofs, maxsize, dev_properties[i].default_value);
+				ofs = poke32(buffer, ofs, maxsize, dev_properties[i].current_value);     
 			break;
 
 			case MTP_TYPE_UINT64:
 				ofs = poke32(buffer, ofs, maxsize, dev_properties[i].default_value & 0xFFFFFFFF);
 				ofs = poke32(buffer, ofs, maxsize, dev_properties[i].default_value >> 32);
-				ofs = poke32(buffer, ofs, maxsize, dev_properties[i].default_value & 0xFFFFFFFF);
-				ofs = poke32(buffer, ofs, maxsize, dev_properties[i].default_value >> 32);
+				ofs = poke32(buffer, ofs, maxsize, dev_properties[i].current_value & 0xFFFFFFFF);     
+				ofs = poke32(buffer, ofs, maxsize, dev_properties[i].current_value >> 32);     
 			break;
 
 			default:
-				PRINT_ERROR("build_device_properties_dataset : Unsupported data type : 0x%.4X", dev_properties[i].data_type );
 				return 0;
 			break;
+
 		}
 
-		ofs = poke32(buffer, ofs, maxsize, dev_properties[i].group_code);           // Group code
 		ofs = poke08(buffer, ofs, maxsize, dev_properties[i].form_flag);            // Form flag
+
+		if (dev_properties[i].form_flag != 0x00) {
+			if (dev_properties[i].form_flag == 0x02 && dev_properties[i].data_type != MTP_TYPE_STR)
+				ofs = poke16(buffer, ofs, maxsize, dev_properties[i].nbparam);
+
+
+			for (a = 0; a < dev_properties[i].nbparam; a++) 
+			{
+				switch(dev_properties[i].format_id)
+				{
+
+					case MTP_TYPE_STR:
+					case MTP_TYPE_UINT8:
+					ofs = poke08(buffer, ofs, maxsize, dev_properties[i].extra[a]);
+					break;
+
+					case MTP_TYPE_UINT16:
+					ofs = poke16(buffer, ofs, maxsize, dev_properties[i].extra[a]);
+					break;
+
+					case MTP_TYPE_UINT32:
+					ofs = poke32(buffer, ofs, maxsize, dev_properties[i].extra[a]);
+					break;
+
+					default:
+						return 0;
+					break;
+				}
+			}
+			
+		}
 	}
 
 	return ofs;
@@ -636,26 +794,91 @@ int build_ObjectPropValue_dataset(mtp_ctx * ctx,void * buffer, int maxsize,uint3
 	return ofs;
 }
 
-int build_DevicePropValue_dataset(mtp_ctx * ctx,void * buffer, int maxsize,uint32_t prop_code)
+int setDevicePropValue(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, uint32_t prop_code)
 {
-	int ofs;
 
+	int i;
+	uint32_t prop_value;
+
+	PRINT_DEBUG("setDevicePropValue: Finding prop_code 0x%x", prop_code);
+        i = 0;
+        while(dev_properties[i].prop_code != 0xFFFF )
+        {
+                if( dev_properties[i].prop_code == prop_code )
+                {
+                        break;
+                }
+                i++;
+        }
+
+	if (properties[i].getset != 0x01)
+		return MTP_RESPONSE_ACCESS_DENIED;
+
+	if( properties[i].prop_code == 0xFFFF )
+	{
+		return MTP_RESPONSE_DEVICE_PROP_NOT_SUPPORTED;
+	}
+
+	prop_value = peek(mtp_packet_hdr, sizeof(MTP_PACKET_HEADER), 4);  
+
+	dev_properties[i].current_value = prop_value;
+	return MTP_RESPONSE_OK;
+}
+
+int getDevicePropValue(mtp_ctx * ctx,void * buffer, int maxsize,uint32_t prop_code)
+{
+        int i, j;
+	uint8_t l;
+	int ofs;
 	ofs = 0;
+
+        PRINT_DEBUG("setDevicePropValue: Finding prop_code 0x%x", prop_code);
+        i = 0;
+        while(dev_properties[i].prop_code != 0xFFFF )
+        {
+                if( dev_properties[i].prop_code == prop_code )
+                {
+                        break;
+                }
+                i++;
+        }
+
+	if( properties[i].prop_code == 0xFFFF )
+	{
+		PRINT_ERROR("getDevicePropValue : Unsupported property : 0x%.4X (%s)", prop_code, mtp_get_property_string(prop_code));
+		return 0;
+	}
+
 
 	PRINT_DEBUG("build_DevicePropValue_dataset : Property 0x%.4X (%s)", prop_code, mtp_get_property_string(prop_code));
 
-	switch(prop_code)
+	switch(dev_properties[i].format_id)
 	{
-		case MTP_DEVICE_PROPERTY_BATTERY_LEVEL:
-			ofs = poke16(buffer, ofs, maxsize, 0x8000);
+		case MTP_TYPE_STR:
+			//current value
+			j = 0;
+			l = dev_properties[i].current_value_str[0];
+			ofs = poke08(buffer, ofs, maxsize, l);
+			for (j = 1; j < (l * 2) + 1; j++) {
+				ofs = poke08(buffer, ofs, maxsize, dev_properties[i].current_value_str[j]);
+			}
+
 		break;
 
-		case MTP_DEVICE_PROPERTY_DEVICE_FRIENDLY_NAME:
-			ofs = poke_string(buffer, ofs, maxsize, ctx->usb_cfg.usb_string_product);
+		case MTP_TYPE_UINT8:
+			ofs = poke08(buffer, ofs, maxsize, dev_properties[i].current_value);
+		break;
+
+		case MTP_TYPE_UINT16:
+			ofs = poke16(buffer, ofs, maxsize, dev_properties[i].current_value);
+		break;
+
+		case MTP_TYPE_UINT32:
+			ofs = poke32(buffer, ofs, maxsize, dev_properties[i].current_value);
 		break;
 
 		default:
-			PRINT_ERROR("build_DevicePropValue_dataset : Unsupported property : 0x%.4X (%s)", prop_code, mtp_get_property_string(prop_code));
+			PRINT_ERROR("getDevicePropValue : Unsupported property : 0x%.4X (%s)", prop_code, mtp_get_property_string(prop_code));
 			return 0;
 		break;
 	}
@@ -721,7 +944,7 @@ int objectproplist_element(mtp_ctx * ctx, void * buffer, int * ofs, int maxsize,
 	return 0;
 }
 
-int build_objectproplist_dataset(mtp_ctx * ctx, void * buffer, int maxsize,fs_entry * entry, uint32_t handle,uint32_t format_id, uint32_t prop_code, uint32_t prop_group_code, uint32_t depth)
+int build_objectproplist_dataset(mtp_ctx * ctx, void * buffer, int maxsize,fs_entry * entry, uint32_t handle,uint32_t format_id, uint32_t prop_code, uint32_t prop_current_value, uint32_t depth)
 {
 	struct stat64 entrystat;
 	time_t t;

@@ -18,15 +18,41 @@
  */
 
 /**
- * @file   mtp_ops_helpers.h
- * @brief  mtp operations helpers
+ * @file   mtp_op_initiatecapture.c
+ * @brief  trigger a photo to be saved to the requested container
  * @author Jean-François DEL NERO <Jean-Francois.DELNERO@viveris.fr>
+ * @author Ian Cass <ian@wheep.co.uk>
  */
 
-mtp_size send_file_data( mtp_ctx * ctx, fs_entry * entry,mtp_offset offset, mtp_size maxsize );
-int delete_tree(mtp_ctx * ctx,uint32_t handle);
-void *capture (void *arg);
-uint32_t getPropValue(uint32_t prop_code);
-uint32_t getShutterSpeed();
-uint32_t registerFiles(mtp_ctx * ctx, uint32_t storageid, uint32_t parent_handle);
+#define _GNU_SOURCE
+#include "buildconf.h"
+
+#include <inttypes.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <pthread.h>
+
+
+#include "logs_out.h"
+
+#include "mtp.h"
+#include "mtp_helpers.h"
+#include "mtp_constant.h"
+#include "mtp_properties.h"
+#include "mtp_operations.h"
+
+
+uint32_t mtp_op_NikonChangeCameraMode(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, int * size,uint32_t * ret_params, int * ret_params_size)
+{
+	if(!ctx->fs_db)
+		return MTP_RESPONSE_SESSION_NOT_OPEN;
+
+	//FIXME what to do here??
+
+	return MTP_RESPONSE_OK;
+
+}
 

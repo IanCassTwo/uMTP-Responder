@@ -51,7 +51,7 @@ static int get_file_info(mtp_ctx * ctx, const struct inotify_event *event, fs_en
 
 	if( entry && fileinfo )
 	{
-		PRINT_DEBUG( "Entry %x - %s", entry->handle, entry->name );
+		PRINT_DEBUG( "get_file_info: Entry %x - %s", entry->handle, entry->name );
 
 		path = build_full_path( ctx->fs_db, mtp_get_storage_root( ctx, entry->storage_id), entry);
 		if( path )
@@ -123,6 +123,7 @@ void* inotify_thread(void* arg)
 	{
 		memset(inotify_buffer,0,sizeof(inotify_buffer));
 		length = read(ctx->inotify_fd, inotify_buffer, sizeof(inotify_buffer));
+		PRINT_DEBUG( "inotify_thread : Fired");
 
 		if ( length >= 0 )
 		{
@@ -151,12 +152,37 @@ void* inotify_thread(void* arg)
 								{
 									// If the entry is not in the db, add it and trigger an MTP_EVENT_OBJECT_ADDED event
 									new_entry = add_entry( ctx->fs_db, &fileinfo, entry->handle, entry->storage_id );
-
-									// Send an "ObjectAdded" (0x4002) MTP event message with the entry handle.
-									handle[0] = new_entry->handle;
-									mtp_push_event( ctx, MTP_EVENT_OBJECT_ADDED, 1, (uint32_t *)&handle );
-
 									PRINT_DEBUG( "inotify_thread (IN_CREATE): Entry %s created (Handle 0x%.8X)", event->name, new_entry->handle );
+
+
+									// Is this new file a result of an InitiateCapture? 
+									// If so, send a CaptureComplete
+									//TODO: Improve the whole tracking of InitiateCapture.
+
+									handle[0] = new_entry->handle;
+
+									if (ctx->InitiateCaptureTxId) {
+										PRINT_DEBUG( "inotify_thread (IN_CREATE): Pushing MTP_EVENT_OBJECT_ADDED and MTP_EVENT_CAPTURE_COMPLETE 0x%x", ctx->InitiateCaptureTxId);
+										mtp_push_event( ctx, MTP_EVENT_OBJECT_ADDED, ctx->InitiateCaptureTxId, 1, (uint32_t *)&handle );
+
+										handle[0] = ctx->InitiateCaptureTxId;
+										mtp_push_event( ctx, MTP_EVENT_CAPTURE_COMPLETE, 0xffffffff, 1, (uint32_t *)&handle);
+										ctx->InitiateCaptureTxId = 0x00;
+									} else if (ctx->NikonInitiateCaptureTxId) {
+										PRINT_DEBUG( "inotify_thread (IN_CREATE): Pushing MTP_EVENT_NIKON_OBJECT_ADDED_IN_SDRAM and MTP_EVENT_NIKON_CAPTURE_COMPLETE_REC_IN_SDRAM 0x%x", ctx->NikonInitiateCaptureTxId);
+										mtp_push_event( ctx, MTP_EVENT_NIKON_OBJECT_ADDED_IN_SDRAM, ctx->NikonInitiateCaptureTxId, 1, (uint32_t *)&handle );
+
+										handle[0] = ctx->NikonInitiateCaptureTxId;
+										mtp_push_event( ctx, MTP_EVENT_NIKON_CAPTURE_COMPLETE_REC_IN_SDRAM, 0xffffffff, 1, (uint32_t *)&handle );
+										ctx->EventType = MTP_EVENT_NIKON_OBJECT_ADDED_IN_SDRAM;
+										ctx->EventTxId = new_entry->handle;
+										ctx->NikonInitiateCaptureTxId = 0x00;
+
+									} else {
+										PRINT_DEBUG( "inotify_thread (IN_CREATE): Pushing MTP_EVENT_OBJECT_ADDED");
+										mtp_push_event( ctx, MTP_EVENT_OBJECT_ADDED, 0xffffffff, 1, (uint32_t *)&handle );
+									} 
+
 								}
 								else
 								{
@@ -192,10 +218,9 @@ void* inotify_thread(void* arg)
 								if( modified_entry )
 								{
 									// Send an "ObjectInfoChanged" (0x4007) MTP event message with the entry handle.
-									handle[0] = modified_entry->handle;
-									mtp_push_event( ctx, MTP_EVENT_OBJECT_INFO_CHANGED, 1, (uint32_t *)&handle );
-
+									handle[1] = modified_entry->handle;
 									PRINT_DEBUG( "inotify_thread (IN_MODIFY): Entry %s modified (Handle 0x%.8X)", event->name, modified_entry->handle);
+									mtp_push_event( ctx, MTP_EVENT_OBJECT_INFO_CHANGED, 0xffffffff, 1, (uint32_t *)&handle );
 								}
 							}
 							else
@@ -235,9 +260,8 @@ void* inotify_thread(void* arg)
 
 									// Send an "ObjectRemoved" (0x4003) MTP event message with the entry handle.
 									handle[0] = deleted_entry->handle;
-									mtp_push_event( ctx, MTP_EVENT_OBJECT_REMOVED, 1, (uint32_t *)&handle );
-
 									PRINT_DEBUG( "inotify_thread (IN_DELETE): Entry %s deleted (Handle 0x%.8X)", event->name, deleted_entry->handle);
+									mtp_push_event( ctx, MTP_EVENT_OBJECT_REMOVED, 0xffffffff, 1, (uint32_t *)&handle );
 								}
 							}
 							else

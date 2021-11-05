@@ -117,6 +117,9 @@ typedef struct mtp_ctx_
 	uint32_t SetObjectPropValue_Handle;
 	uint32_t SetObjectPropValue_PropCode;
 
+	uint32_t SetDevicePropValue_Handle;
+	uint32_t SetDevicePropValue_PropCode;
+
 	uint32_t max_packet_size;
 
 	mtp_storage storages[MAX_STORAGE_NB];
@@ -132,6 +135,10 @@ typedef struct mtp_ctx_
 
 	volatile int cancel_req;
 	volatile int transferring_file_data;
+	uint32_t InitiateCaptureTxId;
+	uint32_t NikonInitiateCaptureTxId;
+	uint32_t EventType;
+	uint32_t EventTxId;
 }mtp_ctx;
 
 mtp_ctx * mtp_init_responder();
@@ -151,7 +158,7 @@ uint32_t mtp_get_storage_flags(mtp_ctx * ctx, uint32_t storage_id);
 
 int check_handle_access( mtp_ctx * ctx, fs_entry * entry, uint32_t handle, int wraccess, uint32_t * response);
 
-int mtp_push_event(mtp_ctx * ctx, uint32_t event, int nbparams, uint32_t * parameters );
+int mtp_push_event(mtp_ctx * ctx, uint32_t event, uint32_t transactionid, int nbparams, uint32_t * parameters );
 
 void mtp_deinit_responder(mtp_ctx * ctx);
 

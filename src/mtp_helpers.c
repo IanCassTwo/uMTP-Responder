@@ -87,6 +87,7 @@ int poke16(void * buffer, int index, int maxsize, uint16_t data)
 	return index + 2;
 }
 
+//FIXME this is broken - sends 2 bytes instead of 1
 int poke08(void * buffer, int index, int maxsize, uint8_t data)
 {
 	if(index < 0)
@@ -100,7 +101,7 @@ int poke08(void * buffer, int index, int maxsize, uint8_t data)
 		return -1;
 	}
 
-	*(((unsigned char *)buffer) + index) = ((uint8_t)data);
+	*(((unsigned char *)buffer) + index) = ((uint8_t)data & 0xff);
 	return index + 1;
 }
 

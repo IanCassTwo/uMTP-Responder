@@ -44,7 +44,7 @@ uint32_t mtp_op_GetObjectPropList(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_h
 	uint32_t handle;
 	uint32_t format_id;
 	uint32_t prop_code;
-	uint32_t prop_group_code;
+	uint32_t prop_current_value;
 	uint32_t depth;
 	int sz,tmp_sz;
 
@@ -56,10 +56,10 @@ uint32_t mtp_op_GetObjectPropList(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_h
 	handle = peek(mtp_packet_hdr, sizeof(MTP_PACKET_HEADER), 4);
 	format_id = peek(mtp_packet_hdr, sizeof(MTP_PACKET_HEADER) + 4, 4);
 	prop_code = peek(mtp_packet_hdr, sizeof(MTP_PACKET_HEADER) + 8, 4);
-	prop_group_code = peek(mtp_packet_hdr, sizeof(MTP_PACKET_HEADER) + 12, 4);
+	prop_current_value = peek(mtp_packet_hdr, sizeof(MTP_PACKET_HEADER) + 12, 4);
 	depth = peek(mtp_packet_hdr, sizeof(MTP_PACKET_HEADER) + 16, 4);
 
-	PRINT_DEBUG("MTP_OPERATION_GET_OBJECT_PROP_LIST :(Handle: 0x%.8X FormatCode: 0x%.8X ObjPropCode: 0x%.8X ObjPropGroupCode: 0x%.8X Depth: %d)", handle, format_id, prop_code, prop_group_code, depth);
+	PRINT_DEBUG("MTP_OPERATION_GET_OBJECT_PROP_LIST :(Handle: 0x%.8X FormatCode: 0x%.8X ObjPropCode: 0x%.8X ObjPropGroupCode: 0x%.8X Depth: %d)", handle, format_id, prop_code, prop_current_value, depth);
 
 	if( format_id != 0x00000000 )
 	{   // Specification by format not currently supported
@@ -69,7 +69,7 @@ uint32_t mtp_op_GetObjectPropList(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_h
 	if( prop_code == 0x00000000 )
 	{   // ObjectPropGroupCode not currently supported
 
-		if( prop_group_code == 0x00000000 )
+		if( prop_current_value == 0x00000000 )
 		{
 			response_code = MTP_RESPONSE_PARAMETER_NOT_SUPPORTED;
 
@@ -92,7 +92,7 @@ uint32_t mtp_op_GetObjectPropList(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_h
 		if(sz < 0)
 			goto error;
 
-		tmp_sz = build_objectproplist_dataset(ctx, ctx->wrbuffer + sizeof(MTP_PACKET_HEADER),ctx->usb_wr_buffer_max_size - sizeof(MTP_PACKET_HEADER),entry, handle, format_id, prop_code, prop_group_code, depth);
+		tmp_sz = build_objectproplist_dataset(ctx, ctx->wrbuffer + sizeof(MTP_PACKET_HEADER),ctx->usb_wr_buffer_max_size - sizeof(MTP_PACKET_HEADER),entry, handle, format_id, prop_code, prop_current_value, depth);
 		if( tmp_sz < 0)
 			goto error;
 

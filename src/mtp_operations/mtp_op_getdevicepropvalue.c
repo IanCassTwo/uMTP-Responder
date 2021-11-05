@@ -55,7 +55,7 @@ uint32_t mtp_op_GetDevicePropValue(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_
 	if(sz < 0)
 		goto error;
 
-	tmp_sz = build_DevicePropValue_dataset(ctx,ctx->wrbuffer + sizeof(MTP_PACKET_HEADER), ctx->usb_wr_buffer_max_size - sizeof(MTP_PACKET_HEADER), prop_code);
+	tmp_sz = getDevicePropValue(ctx,ctx->wrbuffer + sizeof(MTP_PACKET_HEADER), ctx->usb_wr_buffer_max_size - sizeof(MTP_PACKET_HEADER), prop_code);
 	if(tmp_sz < 0)
 		goto error;
 

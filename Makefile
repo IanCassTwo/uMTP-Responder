@@ -1,5 +1,5 @@
 
-override CFLAGS += -I./inc -lpthread -Wall -O3
+override CFLAGS += -I./inc -lpthread -Wall -O3 -std=gnu99
 
 sources := $(wildcard src/*.c)
 objects := $(sources:src/%.c=obj/%.o)

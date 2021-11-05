@@ -51,14 +51,17 @@ uint32_t mtp_op_GetDevicePropDesc(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_h
 	pthread_mutex_lock( &ctx->inotify_mutex );
 
 	property_id = peek(mtp_packet_hdr, sizeof(MTP_PACKET_HEADER), 4);  // Get param 1 - property id
+	PRINT_DEBUG("MTP_OPERATION_GET_DEVICE_PROP_DESC property_id : 0x%x", property_id);
 
 	sz = build_response(ctx, mtp_packet_hdr->tx_id, MTP_CONTAINER_TYPE_DATA, mtp_packet_hdr->code, ctx->wrbuffer, ctx->usb_wr_buffer_max_size, 0,0);
 	if(sz < 0)
 		goto error;
+	PRINT_DEBUG("MTP_OPERATION_GET_DEVICE_PROP_DESC: header size = %d", sz);
 
 	tmp_sz = build_device_properties_dataset(ctx,ctx->wrbuffer + sizeof(MTP_PACKET_HEADER), ctx->usb_wr_buffer_max_size - sizeof(MTP_PACKET_HEADER), property_id);
 	if(tmp_sz < 0)
 		goto error;
+	PRINT_DEBUG("MTP_OPERATION_GET_DEVICE_PROP_DESC: body size = %d", tmp_sz);
 
 	sz += tmp_sz;
 

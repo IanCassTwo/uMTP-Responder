@@ -510,6 +510,7 @@ fs_entry * get_entry_by_handle_and_storageid(fs_handles_db * db, uint32_t handle
 
 	while( entry_list )
 	{
+		PRINT_DEBUG( "get_entry_by_handle_and_storageid: Entry %x - %s", entry_list->handle, entry_list->name );
 		if( !( entry_list->flags & ENTRY_IS_DELETED ) && ( entry_list->handle == handle ) && ( entry_list->storage_id == storage_id ) )
 		{
 			return entry_list;
@@ -528,6 +529,8 @@ char * build_full_path(fs_handles_db * db,char * root_path,fs_entry * entry)
 	int full_path_offset;
 
 	full_path = NULL;
+
+	PRINT_DEBUG("build_full_path root_path : %s ",root_path);
 
 	curentry = entry;
 	totallen = 0;

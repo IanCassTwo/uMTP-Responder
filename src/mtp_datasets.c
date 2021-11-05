@@ -67,6 +67,7 @@ int build_deviceinfo_dataset(mtp_ctx * ctx, void * buffer, int maxsize)
 	ofs = poke32(buffer, ofs, maxsize, elements_cnt);
 	for( i = 0; i < elements_cnt ; i++ )
 	{
+		PRINT_DEBUG("build_deviceinfo_dataset: Device Property 0x%0x", dev_properties[i].prop_code);
 		ofs = poke16(buffer, ofs, maxsize, dev_properties[i].prop_code);
 	}
 
@@ -74,8 +75,18 @@ int build_deviceinfo_dataset(mtp_ctx * ctx, void * buffer, int maxsize)
 	// Supported formats
 
 	// Capture Formats... (No capture format)
+	elements_cnt = 0;
+	while( capture_properties[elements_cnt].format_code != 0xFFFF )
+	{
+		elements_cnt++;
+	}
 
-	ofs = poke32(buffer, ofs, maxsize, 0x00000000);
+	ofs = poke32(buffer, ofs, maxsize, elements_cnt);
+	for( i = 0; i < elements_cnt ; i++ )
+	{
+		ofs = poke16(buffer, ofs, maxsize, capture_properties[i].format_code);
+	}
+
 
 	// Playback Formats
 	elements_cnt = 0;
@@ -196,7 +207,9 @@ int build_objectinfo_dataset(mtp_ctx * ctx, void * buffer, int maxsize,fs_entry 
 	if(entry->flags & ENTRY_IS_DIR)
 		ofs = poke16(buffer, ofs, maxsize, MTP_FORMAT_ASSOCIATION);                              // ObjectFormat Code
 	else
-		ofs = poke16(buffer, ofs, maxsize, MTP_FORMAT_UNDEFINED);                                // ObjectFormat Code
+		//FIXME send appropriate format code
+		//ofs = poke16(buffer, ofs, maxsize, MTP_FORMAT_UNDEFINED);                                // ObjectFormat Code
+		ofs = poke16(buffer, ofs, maxsize, MTP_FORMAT_DEFINED);                                // ObjectFormat Code
 	ofs = poke16(buffer, ofs, maxsize, 0x0000);                                                  // Protection Status (NR)
 
 	entry->size = entrystat.st_size;
@@ -250,7 +263,8 @@ int build_event_dataset(mtp_ctx * ctx, void * buffer, int maxsize, uint32_t even
 	ofs = poke32(buffer, ofs, maxsize, 0);                                            // Size
 	ofs = poke16(buffer, ofs, maxsize, MTP_CONTAINER_TYPE_EVENT);                     // Type
 	ofs = poke16(buffer, ofs, maxsize, event );                                       // Event Code
-	ofs = poke32(buffer, ofs, maxsize, ctx->session_id);                              // MTP Session ID
+	ofs = poke32(buffer, ofs, maxsize, transaction);                                  // Transaction ID
+
 	for(i=0;i<nbparams;i++)
 	{
 		ofs = poke32(buffer, ofs, maxsize, parameters[i]);
