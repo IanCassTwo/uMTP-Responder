@@ -48,7 +48,8 @@
 uint32_t mtp_op_NikonGetEvent(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, int * size,uint32_t * ret_params, int * ret_params_size)
 {
         int sz;
-	uint32_t params[5];
+	//uint32_t params[5];
+	uint16_t params[20];
 	int psize = 0;
 
 
@@ -60,13 +61,33 @@ uint32_t mtp_op_NikonGetEvent(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, 
 
 	PRINT_DEBUG("MTP_OPERATION_NIKON_GET_EVENT 0x%x", mtp_packet_hdr->tx_id);
 
-	if (ctx->EventTxId) {
+	params[0] = 0x00;
+	psize = sizeof(uint32_t);
+	if (ctx->EventHandle) {
 
-		PRINT_DEBUG("MTP_OPERATION_NIKON_GET_EVENT Found outstanding event 0x%x = 0x%x", ctx->EventType, ctx->EventTxId);
-		params[0] = (ctx->EventType << 16) | (0x0001 & 0xffff);
-		params[1] = ctx->EventTxId;
-		psize = sizeof(uint32_t) * 2;
-		ctx->EventTxId = 0;
+		//TODO: clean up this whole event handling thing
+		PRINT_DEBUG("MTP_OPERATION_NIKON_GET_EVENT Found outstanding event 0x%x = 0x%x", ctx->EventType, ctx->EventHandle);
+		if (ctx->EventType == MTP_EVENT_NIKON_CAPTURE_COMPLETE_REC_IN_SDRAM) {
+
+			params[0] = 0x0002;
+			params[1] = MTP_EVENT_NIKON_OBJECT_ADDED_IN_SDRAM;
+			params[2] = ctx->EventHandle & 0xffff;
+			params[3] = ctx->EventHandle << 16;
+			params[4] = MTP_EVENT_NIKON_CAPTURE_COMPLETE_REC_IN_SDRAM;
+			params[5] = ctx->InitiateCaptureTxId & 0xffff;
+			params[6] = ctx->InitiateCaptureTxId << 16;
+
+		} else {
+			params[0] = 0x0002;
+			params[1] = MTP_EVENT_OBJECT_ADDED;
+			params[2] = ctx->EventHandle & 0xffff;
+			params[3] = ctx->EventHandle << 16;
+			params[4] = MTP_EVENT_CAPTURE_COMPLETE;
+			params[5] = ctx->NikonInitiateCaptureTxId & 0xffff;
+			params[6] = ctx->NikonInitiateCaptureTxId << 16;
+		}
+		psize = sizeof(uint16_t) * 7;
+		ctx->EventHandle = 0;
 		ctx->EventType = 0;
 	} 
 

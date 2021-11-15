@@ -88,6 +88,13 @@ typedef struct mtp_storage_
 #define UMTP_STORAGE_READONLY    0x00000001
 #define UMTP_STORAGE_READWRITE   0x00000000
 
+typedef struct mq_entry_
+{
+	uint32_t TransactionId;
+	uint32_t EventType;
+	uint32_t EventHandle;
+} mq_entry;
+
 typedef struct mtp_ctx_
 {
 	uint32_t session_id;
@@ -138,7 +145,10 @@ typedef struct mtp_ctx_
 	uint32_t InitiateCaptureTxId;
 	uint32_t NikonInitiateCaptureTxId;
 	uint32_t EventType;
-	uint32_t EventTxId;
+	uint32_t EventHandle;
+
+	int imageid;
+
 }mtp_ctx;
 
 mtp_ctx * mtp_init_responder();

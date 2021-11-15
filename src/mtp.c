@@ -592,6 +592,9 @@ int process_in_packet(mtp_ctx * ctx, MTP_PACKET_HEADER * mtp_packet_hdr, int raw
 			response_code = mtp_op_NikonDeviceReady(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
 		break;
 
+		case MTP_OPERATION_NIKON_GET_PIC_CTRL_DATA :
+			response_code = mtp_op_NikonGetPicCtrlData(ctx,mtp_packet_hdr,&size,(uint32_t*)&params,&params_size);
+		break;
 
 
 		default:

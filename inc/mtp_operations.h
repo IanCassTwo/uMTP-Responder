@@ -62,8 +62,8 @@ uint32_t mtp_op_NikonGetVendorPropCodes(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_pa
 uint32_t mtp_op_NikonInitiateCaptureRecInSDRAM(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, int * size,uint32_t * ret_params, int * ret_params_size);
 uint32_t mtp_op_NikonGetEvent(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, int * size,uint32_t * ret_params, int * ret_params_size);
 uint32_t mtp_op_NikonDeviceReady(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, int * size,uint32_t * ret_params, int * ret_params_size);
+uint32_t mtp_op_NikonGetPicCtrlData(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, int * size,uint32_t * ret_params, int * ret_params_size);
 
 
 uint32_t registerFiles(mtp_ctx * ctx, uint32_t storageid, uint32_t parent_handle);
-
 

@@ -54,17 +54,22 @@ uint32_t mtp_op_InitiateCapture(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr
 	if(!ctx->fs_db)
 		return MTP_RESPONSE_SESSION_NOT_OPEN;
 
+        if (ctx->InitiateCaptureTxId || ctx->NikonInitiateCaptureTxId)
+                return MTP_RESPONSE_DEVICE_BUSY;
 
 	// TODO: save correct object format
 	// TODO: unique name with numbers rather than junk
 
 	// Have params?
-	if (sizeof(MTP_PACKET_HEADER) == *size) {
-		storage_path = ctx->storages[0].root_path;
-	} else {
+	storage_path = ctx->storages[0].root_path;
+	if (sizeof(MTP_PACKET_HEADER) != *size) {
         	storageid = peek(mtp_packet_hdr, sizeof(MTP_PACKET_HEADER) + 0, 4); // Get param 1 - Storage ID
+		
 		PRINT_DEBUG("MTP_OPERATION_INITIATE_CAPTURE : storage id 0x%x", storageid);
-		storage_path = mtp_get_storage_root(ctx, storageid);
+
+		// thx to digiCamControl!
+		if (storageid != 0x00000000)
+			storage_path = mtp_get_storage_root(ctx, storageid);
 	}
 
         if (storage_path == NULL) 

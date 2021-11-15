@@ -171,6 +171,7 @@ profile_property dev_properties[]=
 		nbparam: 3,
 		extra: {0x00, 0x64, 0x01}
 	},
+	/*
 	{
 		prop_code: MTP_DEVICE_PROPERTY_FOCAL_LENGTH,
 		data_type: MTP_TYPE_UINT16,
@@ -180,15 +181,24 @@ profile_property dev_properties[]=
 		form_flag: 0x00,
 	},
 	{
+		prop_code: MTP_DEVICE_PROPERTY_F_NUMBER,
+		data_type: MTP_TYPE_UINT16,
+		getset: 0x00,
+		default_value: 0x00,
+		current_value: 0x00,
+		form_flag: 0x00,
+	},
+	*/
+	{
 		prop_code: MTP_DEVICE_PROPERTY_EXPOSURE_METERING_MODE,
 		data_type: MTP_TYPE_UINT16,
-		getset: 0x01,
-		default_value: 0x02,
+		getset: 0x00,
+		default_value: 0x01,
 		current_value: 0x01,
 		form_flag: 0x02,
 		format_id: MTP_TYPE_UINT16,
-		nbparam: 3,
-		extra: {2,3,4}
+		nbparam: 1,
+		extra: {1}
 	},
 	{
 		prop_code: MTP_DEVICE_PROPERTY_WHITE_BALANCE,
@@ -198,20 +208,22 @@ profile_property dev_properties[]=
 		current_value: 0x02,
 		form_flag: 0x02,
 		format_id: MTP_TYPE_UINT16,
-		nbparam: 9,
-		extra: {2, 4, 5, 6, 7, 32784, 32785, 32786, 32787}
+		nbparam: 5,
+		extra: {1, 2, 4, 5, 6}
 	},
+	/*
 	{
 		prop_code: MTP_DEVICE_PROPERTY_STILL_CAPTURE_MODE,
 		data_type: MTP_TYPE_UINT16,
-		getset: 0x01,
+		getset: 0x00,
 		default_value: 0x01,
 		current_value: 0x01,
 		form_flag: 0x02,
 		format_id: MTP_TYPE_UINT16,
-		nbparam: 6,
-		extra: {1, 2, 32784, 32785, 32788, 32789}
+		nbparam: 1,
+		extra: {1}
 	},
+	*/
 	{
 		prop_code: MTP_DEVICE_PROPERTY_EXPOSURE_PROGRAM_MODE,
 		data_type: MTP_TYPE_UINT16,
@@ -228,22 +240,22 @@ profile_property dev_properties[]=
 		data_type: MTP_TYPE_UINT8,
 		getset: 0x01,
 		default_value: 0x01,
-		current_value: 0x04,
+		current_value: 0x01,
 		form_flag: 0x02,
 		format_id: MTP_TYPE_UINT8,
-		nbparam: 7,
-		extra: {0x00, 0x01, 0x02, 0x04, 0x05, 0x06, 0x07}
+		nbparam: 4,
+		extra: {0x00, 0x01, 0x02, 0x04}
 	},
 	{
 		prop_code: MTP_DEVICE_PROPERTY_EXPOSURE_INDEX,
 		data_type: MTP_TYPE_UINT16,
 		getset: 0x01,
 		default_value: 200,
-		current_value: 3200,
+		current_value: 200,
 		form_flag: 0x02,
 		format_id: MTP_TYPE_UINT16,
-		nbparam: 13,
-		extra: {100, 125, 160, 200, 250, 320, 400, 500, 640, 800, 1000, 1250, 1600, 2000, 2500, 3200, 4000, 5000, 6400, 0xffff}
+		nbparam: 19,
+		extra: {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 3200, 4800, 6400}
 	},
 	{
 		prop_code: MTP_DEVICE_PROPERTY_EXPOSURE_TIME,
@@ -270,6 +282,7 @@ profile_property dev_properties[]=
 		extra: {0x02, 0x00, 0xA, 0x32, 0x00, 0x30, 0x00, 0x32, 0x00, 0x38, 0x00, 0x78, 0x00, 0x31, 0x00, 0x35, 0x00, 0x32, 0x00, 0x30, 0x00, 0x00, 0x00, 0xA, 0x33, 0x00, 0x32, 0x00, 0x38, 0x00, 0x30, 0x00, 0x78, 0x00, 0x32, 0x00, 0x34, 0x00, 0x36, 0x00, 0x34, 0x00, 0x00, 0x00},
 	},
 
+	/*
 	{
 		prop_code: MTP_DEVICE_PROPERTY_NIKON_RECORDINGMEDIA,
 		data_type: MTP_TYPE_UINT8,
@@ -292,7 +305,6 @@ profile_property dev_properties[]=
 		nbparam: 3,
 		extra: {0x00, 0x04, 0x01}
 	},
-	/*
 	{
 		prop_code: MTP_DEVICE_PROPERTY_NIKON_SHUTTERSPEED,
 		data_type: MTP_TYPE_UINT32,
@@ -304,7 +316,6 @@ profile_property dev_properties[]=
 		nbparam: 13,
 		extra: {69536, 68736, 68036, 67536, 67136, 66786, 66536, 66336, 66176, 66036, 65936, 65856, 65786, 65736, 65696, 65661, 65636, 65616, 65596, 65586, 65576, 65566, 65561, 65556, 65551, 65549, 65546, 65544, 65542, 65541, 65540, 65539, 655385, 65538, 655376, 655373, 65537, 851978, 1048586, 131073, 1638410, 196609, 262145, 327681, 393217, 524289, 655361, 851969, 983041, 1310721, 1638401, 1966081, 4294967295}
 	},
-	*/
 	{
 		prop_code: MTP_DEVICE_PROPERTY_NIKON_LIVEVIEWSTATUS,
 		data_type: MTP_TYPE_UINT8,
@@ -314,7 +325,7 @@ profile_property dev_properties[]=
 		form_flag: 0x01,
 		format_id: MTP_TYPE_UINT8,
 		nbparam: 3,
-		extra: {0x00, 0x1, 0x01} 
+		extra: {0x00, 0x01, 0x01} 
 	},
 	{
 		prop_code: MTP_DEVICE_PROPERTY_NIKON_AFMODESELECT,
@@ -379,6 +390,7 @@ profile_property dev_properties[]=
 		nbparam: 22,
 		extra: {73536,71936,70536,69536,68736,68036,67536,67136,66786,66536,66336,66176,66036,65936,65856,65786,65736,65696,65661,65636,65616,65596}
 	},
+	*/
 
 	{
 		prop_code: 0xFFFF
@@ -800,7 +812,7 @@ int setDevicePropValue(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, uint32_
 	int i;
 	uint32_t prop_value;
 
-	PRINT_DEBUG("setDevicePropValue: Finding prop_code 0x%x", prop_code);
+	PRINT_DEBUG("setDevicePropValue: Finding prop_code 0x%x (%s)", prop_code, mtp_get_property_string(prop_code));
         i = 0;
         while(dev_properties[i].prop_code != 0xFFFF )
         {
@@ -811,16 +823,61 @@ int setDevicePropValue(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, uint32_
                 i++;
         }
 
-	if (properties[i].getset != 0x01)
-		return MTP_RESPONSE_ACCESS_DENIED;
-
-	if( properties[i].prop_code == 0xFFFF )
+	if( dev_properties[i].prop_code == 0xFFFF )
 	{
+		PRINT_DEBUG("setDevicePropValue: returning MTP_RESPONSE_DEVICE_PROP_NOT_SUPPORTED");
 		return MTP_RESPONSE_DEVICE_PROP_NOT_SUPPORTED;
 	}
 
-	prop_value = peek(mtp_packet_hdr, sizeof(MTP_PACKET_HEADER), 4);  
+	if (dev_properties[i].getset != 0x01)
+	{
+		PRINT_DEBUG("setDevicePropValue: returning MTP_RESPONSE_ACCESS_DENIED");
+		return MTP_RESPONSE_ACCESS_DENIED;
+	}
 
+	// peek(void * buffer, int index, int typesize)
+        switch(dev_properties[i].format_id)
+        {
+		/*
+                case MTP_TYPE_STR:
+                        //current value
+                        j = 0;
+                        l = dev_properties[i].current_value_str[0];
+                        ofs = poke08(buffer, ofs, maxsize, l);
+                        for (j = 1; j < (l * 2) + 1; j++) {
+                                ofs = poke08(buffer, ofs, maxsize, dev_properties[i].current_value_str[j]);
+                        }
+
+                break;
+		*/
+
+                case MTP_TYPE_UINT8:
+			prop_value = ctx->rdbuffer[sizeof(MTP_PACKET_HEADER)];
+                break;
+
+                case MTP_TYPE_UINT16:
+			PRINT_DEBUG("setDevicePropValue: MTP_TYPE_UINT16");
+			prop_value = ctx->rdbuffer[sizeof(MTP_PACKET_HEADER)] & 0xff;
+			prop_value |= ctx->rdbuffer[sizeof(MTP_PACKET_HEADER) + 1] << 8;
+                break;
+
+                case MTP_TYPE_UINT32:
+			PRINT_DEBUG("setDevicePropValue: MTP_TYPE_UINT32");
+			prop_value = ctx->rdbuffer[sizeof(MTP_PACKET_HEADER)] & 0xffffff;
+			prop_value |= ctx->rdbuffer[sizeof(MTP_PACKET_HEADER) + 1] << 8;
+			prop_value |= ctx->rdbuffer[sizeof(MTP_PACKET_HEADER) + 2] << 16;
+			prop_value |= ctx->rdbuffer[sizeof(MTP_PACKET_HEADER) + 3] << 24;
+                break;
+	
+		default:
+			prop_value = 0;
+		break;
+
+        }
+
+
+
+	PRINT_DEBUG("setDevicePropValue: Setting prop_code 0x%x (%s) to 0x%x", prop_code, mtp_get_property_string(prop_code), prop_value);
 	dev_properties[i].current_value = prop_value;
 	return MTP_RESPONSE_OK;
 }
@@ -832,7 +889,7 @@ int getDevicePropValue(mtp_ctx * ctx,void * buffer, int maxsize,uint32_t prop_co
 	int ofs;
 	ofs = 0;
 
-        PRINT_DEBUG("setDevicePropValue: Finding prop_code 0x%x", prop_code);
+        PRINT_DEBUG("getDevicePropValue: Finding prop_code 0x%x", prop_code);
         i = 0;
         while(dev_properties[i].prop_code != 0xFFFF )
         {
@@ -843,14 +900,14 @@ int getDevicePropValue(mtp_ctx * ctx,void * buffer, int maxsize,uint32_t prop_co
                 i++;
         }
 
-	if( properties[i].prop_code == 0xFFFF )
+	if( dev_properties[i].prop_code == 0xFFFF )
 	{
 		PRINT_ERROR("getDevicePropValue : Unsupported property : 0x%.4X (%s)", prop_code, mtp_get_property_string(prop_code));
 		return 0;
 	}
 
 
-	PRINT_DEBUG("build_DevicePropValue_dataset : Property 0x%.4X (%s)", prop_code, mtp_get_property_string(prop_code));
+	PRINT_DEBUG("getDevicePropValue : Property 0x%.4X (%s)", prop_code, mtp_get_property_string(prop_code));
 
 	switch(dev_properties[i].format_id)
 	{

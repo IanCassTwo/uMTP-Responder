@@ -157,7 +157,6 @@ void* inotify_thread(void* arg)
 
 									// Is this new file a result of an InitiateCapture? 
 									// If so, send a CaptureComplete
-									//TODO: Improve the whole tracking of InitiateCapture.
 
 									handle[0] = new_entry->handle;
 
@@ -167,6 +166,8 @@ void* inotify_thread(void* arg)
 
 										handle[0] = ctx->InitiateCaptureTxId;
 										mtp_push_event( ctx, MTP_EVENT_CAPTURE_COMPLETE, 0xffffffff, 1, (uint32_t *)&handle);
+										ctx->EventType = MTP_EVENT_CAPTURE_COMPLETE;
+										ctx->EventHandle = new_entry->handle;
 										ctx->InitiateCaptureTxId = 0x00;
 									} else if (ctx->NikonInitiateCaptureTxId) {
 										PRINT_DEBUG( "inotify_thread (IN_CREATE): Pushing MTP_EVENT_NIKON_OBJECT_ADDED_IN_SDRAM and MTP_EVENT_NIKON_CAPTURE_COMPLETE_REC_IN_SDRAM 0x%x", ctx->NikonInitiateCaptureTxId);
@@ -174,8 +175,8 @@ void* inotify_thread(void* arg)
 
 										handle[0] = ctx->NikonInitiateCaptureTxId;
 										mtp_push_event( ctx, MTP_EVENT_NIKON_CAPTURE_COMPLETE_REC_IN_SDRAM, 0xffffffff, 1, (uint32_t *)&handle );
-										ctx->EventType = MTP_EVENT_NIKON_OBJECT_ADDED_IN_SDRAM;
-										ctx->EventTxId = new_entry->handle;
+										ctx->EventType = MTP_EVENT_NIKON_CAPTURE_COMPLETE_REC_IN_SDRAM;
+										ctx->EventHandle = new_entry->handle;
 										ctx->NikonInitiateCaptureTxId = 0x00;
 
 									} else {

@@ -175,15 +175,10 @@ void fill_dev_descriptor(mtp_ctx * ctx, usb_gadget * usbctx,struct usb_device_de
 	desc->bDeviceSubClass = 0x00;
 	desc->bDeviceProtocol = 0x00;
 
-	/*
-	desc->bDeviceClass =    ctx->usb_cfg.usb_class;
-	desc->bDeviceSubClass = ctx->usb_cfg.usb_subclass;
-	desc->bDeviceProtocol = ctx->usb_cfg.usb_protocol;
-	*/
-
 	desc->idVendor =        ctx->usb_cfg.usb_vendor_id;
 	desc->idProduct =       ctx->usb_cfg.usb_product_id;
 	desc->bcdDevice =       ctx->usb_cfg.usb_dev_version; // Version
+
 	// Strings
 	desc->iManufacturer =   STRINGID_MANUFACTURER;
 	desc->iProduct =        STRINGID_PRODUCT;

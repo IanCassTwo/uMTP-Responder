@@ -201,9 +201,7 @@ int poke_array(void * buffer, int index, int maxsize, int size, int elementsize,
 
 	if( index + (size + (prefixed*4)) >= maxsize )
 	{
-#ifdef DEBUG
 		PRINT_DEBUG("poke_array : buffer overrun operation attempt ! prefixed : %d, index : %d, maxise : %d",prefixed,index,maxsize);
-#endif
 		return -1;
 	}
 

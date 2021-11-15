@@ -30,3 +30,7 @@ uint32_t getPropValue(uint32_t prop_code);
 uint32_t getShutterSpeed();
 uint32_t registerFiles(mtp_ctx * ctx, uint32_t storageid, uint32_t parent_handle);
 
+struct capture_args {
+    char* storage_path;
+    mtp_ctx* ctx;
+};

@@ -68,8 +68,7 @@ const unsigned short supported_op[]=
 	MTP_OPERATION_NIKON_GET_VENDOR_PROP_CODES,
 	MTP_OPERATION_NIKON_DELETE_IMAGES_IN_SDRAM,
 	MTP_OPERATION_NIKON_CHANGE_CAMERA_MODE,
-	
-	
+	MTP_OPERATION_NIKON_GET_PIC_CTRL_DATA,
 };
 
 const int supported_op_size=sizeof(supported_op);

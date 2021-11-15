@@ -23,6 +23,7 @@
  * @author Jean-François DEL NERO <Jean-Francois.DELNERO@viveris.fr>
  */
 
+#define _GNU_SOURCE
 #include "buildconf.h"
 
 #include <inttypes.h>
@@ -34,6 +35,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <pthread.h>
+#include <dirent.h>
 
 
 #include "mtp.h"
@@ -260,13 +262,85 @@ uint32_t getPropValue(uint32_t prop_code)
         return dev_properties[i].current_value;
 }
 
+uint32_t getCompressionSetting()
+{
+        uint32_t ss = getPropValue(MTP_DEVICE_PROPERTY_COMPRESSION_SETTING);
+        if (ss > 0)
+                return ss;
+        return 0;
+}
+
 uint32_t getShutterSpeed()
 {
         uint32_t ss = getPropValue(MTP_DEVICE_PROPERTY_EXPOSURE_TIME);
         if (ss > 0)
-                return ss * 10;
-	//FIXME = how to correlate different methods of setting shutter speed
+                return ss * 100;
         return 0;
+}
+
+uint32_t getProgramMode()
+{
+        uint32_t ss = getPropValue(MTP_DEVICE_PROPERTY_EXPOSURE_PROGRAM_MODE);
+        return ss;
+}
+
+uint32_t getISO()
+{
+        uint32_t ss = getPropValue(MTP_DEVICE_PROPERTY_EXPOSURE_INDEX);
+        return ss;
+}
+
+int getNextImageNumber(char* storage_path) {
+  DIR *d;
+  struct dirent *dir;
+  d = opendir(storage_path);
+
+  uint16_t t = 0;
+  uint16_t m = 0;
+  char *ptr;
+  char num[4];
+
+  if (d) {
+    while ((dir = readdir(d)) != NULL) {
+        if (dir->d_type == DT_REG && strncmp(dir->d_name, "DSC_", 4) == 0)
+        {
+
+                if (strlen(dir->d_name) > 7)
+                {
+                        strncpy(num, dir->d_name + 4, 4);
+                        t = strtol(num, &ptr, 16);
+                        if (t > m)
+                        {
+                                m = t;
+                        }
+                }
+        }
+
+    }
+    closedir(d);
+  }
+  //FIXME error checking here
+  //FIXME what if increment > 65535?
+  m++;
+  PRINT_DEBUG("Next increment is %d\n", m);
+  return m;
+
+}
+
+int getDigitalGain(int iso) {
+	if (iso > 4800)
+		return 4;
+	if (iso > 3200) 
+		return 3;
+	if (iso > 1600)
+		return 2;
+	return 1;
+}
+
+int getAnalogGain(int iso) {
+	if (iso > 1600)
+		return 16;
+	return iso / 100;
 }
 
 void *capture (void *arg)
@@ -277,15 +351,19 @@ void *capture (void *arg)
         pid_t child_pid;
         char* tmpfilename;
         char* ffilename;
-        char* filename;
-        //uint32_t ss;
-        //char* sspeed;
+        //char* filename;
+        uint32_t ss, iso, raw;
+	int i;
+        char* sspeed;
+        char* sag;
+        char* sdg;
+        char* siso;
 
         storage_path = (char *)arg;
 
         pthread_detach(pthread_self());
 
-        tmpfilename = tempnam("/tmp", "DSC_");
+        tmpfilename = tempnam("/tmp", "");
 
         child_pid = fork ();
 
@@ -293,7 +371,7 @@ void *capture (void *arg)
         if (child_pid == -1)
 	{
                 PRINT_DEBUG("[%lu] capture parent : fork failed!", pthread_self());
-                return;
+                return 1;
 	}
 
         if (child_pid != 0) {
@@ -304,9 +382,61 @@ void *capture (void *arg)
                 //FIXME error handling
                 PRINT_DEBUG("[%lu] capture parent : raspistill finished with %d", pthread_self(), status);
                 if (!status) {
-			// Let's copy the temporary file into the emulated SDCARD storage area
-			filename = tempnam(storage_path, "DSC_");
-			asprintf(&ffilename, "%s.jpg", filename);
+			int index = getNextImageNumber(storage_path);
+                        raw = getCompressionSetting();
+
+			/*
+			if (raw == 4) {
+				// We have embedded raw data
+				asprintf(&ffilename, "%s.raw", tmpfilename);
+
+				FILE *fd, *fd2;
+				char buffer[64];
+				int found = 0;
+				int bytesRead;
+
+				fd = fopen (tmpfilename, "rb");
+				if (fd == NULL) {
+					return 1;
+				}
+
+				fd2 = fopen (ffilename, "wb");
+				if (fd2 == NULL) {
+					return 1;
+				}
+
+				PRINT_DEBUG("[%lu] capture parent : Processing raw file from %s to %s", pthread_self(),  tmpfilename, ffilename);
+				// copy file a chunk at a time
+				while ((bytesRead = fread(buffer, 1, sizeof(buffer), fd)) > 0) {
+					if (found) {
+						fwrite(buffer, 1, bytesRead, fd2);
+					} else {
+						char *pfound = memmem(buffer, bytesRead, "BRCM", 4);
+						if (pfound != NULL) {
+							found = 1;
+							fwrite(pfound, 1, sizeof(pfound), fd2);
+						}
+					}
+				}
+
+				fclose(fd);
+				fclose(fd2);
+
+				// Remove the old temp file
+				unlink(tmpfilename);
+
+				// Make our converted raw file the new temp file
+				strcpy(tmpfilename, ffilename);
+
+				//Prepare dest filename
+                                asprintf(&ffilename, "%s/DSC_%04x.raw", storage_path, index);
+			} else {
+				//Prepare dest filename
+				asprintf(&ffilename, "%s/DSC_%04x.jpg", storage_path, index);
+			}
+			*/
+
+			asprintf(&ffilename, "%s/DSC_%04x.jpg", storage_path, index);
 			PRINT_DEBUG("[%lu] capture parent : Renaming %s to %s", pthread_self(),  tmpfilename, ffilename);
 			status = rename(tmpfilename, ffilename);
 			// ObjectAdded and CaptureComplete are sent by the inotify handler once the file appears on the storage root
@@ -314,41 +444,75 @@ void *capture (void *arg)
         } else {
                 PRINT_DEBUG("[%lu] capture child : Saving to %s", pthread_self(), tmpfilename);
 
-                //ss = getShutterSpeed();
-                //asprintf(&sspeed, "%d", ss);
 
-                char* arg_list[] = {
+		i = 16;
+                char* arg_list[50] = {
                                 "raspistill",
                                 "-mm",          // metering mode
                                 "average",      // mode
                                 "-th",          // thumbnail
                                 "none",         //  - none
-                                //"-raw",               // Include raw data at end of jpg
                                 "-q",           // JPEG quality
                                 "100",          //  - 100%
-//                              "-ex",          // auto exposure mode
-//                              "off",          //  - off
-                                "-fli",         // flicker reduction
-                                "off",          //  - off
-                                //"-awb",         // auto white balance
-                                //"off",          //  - off
-                                //"--awbgains",   // auto white balance gains
-                                //"2,1.53",       //  - what's this?
                                 "-drc",         // Dynamic Range Compression
                                 "off",          //  - off
-                                "-md",          // Mode
-                                "2",            //  - 3 = 4056x3040, 2 = 2028x1520 2x2 binned
                                 "-n",           // No preview
                                 "-bm",          // Burst capture mode
                                 "-st",          // Force recomputation of statistics on stills capture pass
-                                "-dg",          // Digital gain
-                                "1",            //  - 1
-                                "-ag",          // Analogue gain
-                                "16",           //  - 16
+                                "-fli",         // flicker reduction
+                                "off",          //  - off
+				"-t",		// timeout before take pic in ms
+				"1",		// - 1
                                 "-o",
                                 tmpfilename,
-                                NULL
-                        };
+		};
+
+		// Is Manual?
+		if (getProgramMode() == 1) {
+
+			// Shutter Speed
+                	ss = getShutterSpeed();
+                	asprintf(&sspeed, "%d", ss);
+			arg_list[i++] = "-ss";
+			arg_list[i++] = sspeed;
+
+			// ISO
+                	iso = getISO();
+
+			// JPEG or raw?
+			raw = getCompressionSetting();
+			
+			if (raw == 4)
+			{
+				asprintf(&sag, "%d", getAnalogGain(iso));
+				asprintf(&sdg, "%d", getDigitalGain(iso));
+
+				arg_list[i++] = "-ag";		// Analog gain
+				arg_list[i++] = sag;		// - computed from ISO
+				arg_list[i++] = "-dg";		// Digital gain
+				arg_list[i++] = sdg;		// Computed from ISO
+				arg_list[i++] = "-r";		// Add raw data to end of jpeg
+                                arg_list[i++] = "-awb";         // auto white balance
+                                arg_list[i++] = "off";          //  - off
+                                arg_list[i++] = "--awbgains";   // auto white balance gains
+                                arg_list[i++] = "2,1.53";       //  - what's this?
+				arg_list[i++] = "-ex";		// auto exposure mode
+				arg_list[i++] = "off";		// - off (results in black image in jpg part)
+			} else {
+				asprintf(&siso, "%d", iso);	
+				arg_list[i++] = "-ISO";		// ISO
+				arg_list[i++] = iso;		// - as passed
+			}
+		}
+		arg_list[i++] = NULL;
+
+
+				/*
+				// TODO: binning
+                                "-md",          // Mode
+                                "2",            //  - 3 = 4056x3040, 2 = 2028x1520 2x2 binned
+		*/
+
                 int i = 0;
                 while(arg_list[i] != NULL) {
                         PRINT_DEBUG("[%lu] capture child %d = %s", pthread_self(), i, arg_list[i]);
