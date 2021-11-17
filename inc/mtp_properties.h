@@ -64,5 +64,7 @@ int getDevicePropValue(mtp_ctx * ctx,void * buffer, int maxsize,uint32_t prop_co
 int setDevicePropValue(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, uint32_t prop_code);
 
 int build_objectproplist_dataset(mtp_ctx * ctx, void * buffer, int maxsize,fs_entry * entry, uint32_t handle,uint32_t format_id, uint32_t prop_code, uint32_t prop_group_code, uint32_t depth);
+char* getpropvalueString(uint8_t* bytearray);
+
 
 #endif

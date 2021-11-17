@@ -190,6 +190,14 @@ profile_property dev_properties[]=
 	},
 	*/
 	{
+		prop_code: MTP_DEVICE_PROPERTY_DEVICE_ICON,
+		data_type: MTP_TYPE_UINT8,
+		getset: 0x00,
+		default_value: 0x01,
+		current_value: 0x01,
+		form_flag: 0x00,
+	},
+	{
 		prop_code: MTP_DEVICE_PROPERTY_EXPOSURE_METERING_MODE,
 		data_type: MTP_TYPE_UINT16,
 		getset: 0x00,
@@ -806,11 +814,37 @@ int build_ObjectPropValue_dataset(mtp_ctx * ctx,void * buffer, int maxsize,uint3
 	return ofs;
 }
 
+char* getpropvalueString(uint8_t* bytearray)
+{
+
+	int len = bytearray[0];
+	PRINT_DEBUG("getpropvalueString: len = %d", len);
+	char* str;
+
+	// allocate memory for return value
+	str = malloc(sizeof(char) * len);
+
+	int i;
+	int a = 0;
+	for (i = 0; i < len*2; i+=2) {
+		// Extract LSB char from input byte array
+		char c = bytearray[i + 1] & 0xff;
+		c |= bytearray[i + 1 + 1] << 8;
+
+		// Load char into string array
+		PRINT_DEBUG("getpropvalueString: char = %c", c);
+		str[a] = c;
+		a++;
+	} 
+	return str;
+}
+
 int setDevicePropValue(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, uint32_t prop_code)
 {
 
-	int i;
+	int i, len;
 	uint32_t prop_value;
+	char* str;
 
 	PRINT_DEBUG("setDevicePropValue: Finding prop_code 0x%x (%s)", prop_code, mtp_get_property_string(prop_code));
         i = 0;
@@ -835,30 +869,34 @@ int setDevicePropValue(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, uint32_
 		return MTP_RESPONSE_ACCESS_DENIED;
 	}
 
-	// peek(void * buffer, int index, int typesize)
         switch(dev_properties[i].format_id)
         {
-		/*
                 case MTP_TYPE_STR:
-                        //current value
-                        j = 0;
-                        l = dev_properties[i].current_value_str[0];
-                        ofs = poke08(buffer, ofs, maxsize, l);
-                        for (j = 1; j < (l * 2) + 1; j++) {
-                                ofs = poke08(buffer, ofs, maxsize, dev_properties[i].current_value_str[j]);
-                        }
+
+			len = ctx->rdbuffer[sizeof(MTP_PACKET_HEADER)];
+			len = len * 2;
+			memcpy(dev_properties[i].current_value_str, &ctx->rdbuffer[sizeof(MTP_PACKET_HEADER)], len);
+
+			PRINT_DEBUG("setDevicePropValue: Setting prop_code 0x%x (%s) to MTP_TYPE_STR len %d", prop_code, mtp_get_property_string(prop_code), len);
+			PRINT_DEBUG_BUF(dev_properties[i].current_value_str, len);
+
+			str = getpropvalueString(dev_properties[i].current_value_str);
+			PRINT_DEBUG("setDevicePropValue: string value is %s", str);
 
                 break;
-		*/
 
                 case MTP_TYPE_UINT8:
 			prop_value = ctx->rdbuffer[sizeof(MTP_PACKET_HEADER)];
+			PRINT_DEBUG("setDevicePropValue: Setting prop_code 0x%x (%s) to MTP_TYPE_UINT8 0x%x", prop_code, mtp_get_property_string(prop_code), prop_value);
+			dev_properties[i].current_value = prop_value;
                 break;
 
                 case MTP_TYPE_UINT16:
 			PRINT_DEBUG("setDevicePropValue: MTP_TYPE_UINT16");
 			prop_value = ctx->rdbuffer[sizeof(MTP_PACKET_HEADER)] & 0xff;
 			prop_value |= ctx->rdbuffer[sizeof(MTP_PACKET_HEADER) + 1] << 8;
+			PRINT_DEBUG("setDevicePropValue: Setting prop_code 0x%x (%s) to MTP_TYPE_UINT16 0x%x", prop_code, mtp_get_property_string(prop_code), prop_value);
+			dev_properties[i].current_value = prop_value;
                 break;
 
                 case MTP_TYPE_UINT32:
@@ -867,18 +905,20 @@ int setDevicePropValue(mtp_ctx * ctx,MTP_PACKET_HEADER * mtp_packet_hdr, uint32_
 			prop_value |= ctx->rdbuffer[sizeof(MTP_PACKET_HEADER) + 1] << 8;
 			prop_value |= ctx->rdbuffer[sizeof(MTP_PACKET_HEADER) + 2] << 16;
 			prop_value |= ctx->rdbuffer[sizeof(MTP_PACKET_HEADER) + 3] << 24;
+			PRINT_DEBUG("setDevicePropValue: Setting prop_code 0x%x (%s) to MTP_TYPE_UINT32 0x%x", prop_code, mtp_get_property_string(prop_code), prop_value);
+			dev_properties[i].current_value = prop_value;
                 break;
 	
 		default:
 			prop_value = 0;
+			PRINT_DEBUG("setDevicePropValue: Setting prop_code 0x%x (%s) to UNKNOWN 0x%x", prop_code, mtp_get_property_string(prop_code), prop_value);
+			dev_properties[i].current_value = prop_value;
 		break;
 
         }
 
 
 
-	PRINT_DEBUG("setDevicePropValue: Setting prop_code 0x%x (%s) to 0x%x", prop_code, mtp_get_property_string(prop_code), prop_value);
-	dev_properties[i].current_value = prop_value;
 	return MTP_RESPONSE_OK;
 }
 

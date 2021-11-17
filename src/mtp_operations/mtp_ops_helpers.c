@@ -262,6 +262,28 @@ uint32_t getPropValue(uint32_t prop_code)
         return dev_properties[i].current_value;
 }
 
+char* getPropValueString(uint32_t prop_code)
+{
+        PRINT_DEBUG("getPropValueString: Finding value for 0x%x", prop_code);
+        int i = 0;
+
+        while (dev_properties[i].prop_code != 0xFFFF )
+        {
+                if (dev_properties[i].prop_code == prop_code )
+                {
+                        break;
+                }
+                i++;
+        }
+
+        return getpropvalueString(dev_properties[i].current_value_str);
+}
+
+char* getImageSize()
+{
+        return getPropValueString(MTP_DEVICE_PROPERTY_IMAGE_SIZE);
+}
+
 uint32_t getCompressionSetting()
 {
         uint32_t ss = getPropValue(MTP_DEVICE_PROPERTY_COMPRESSION_SETTING);
@@ -448,8 +470,9 @@ void *capture (void *arg)
 		i = 16;
                 char* arg_list[50] = {
                                 "raspistill",
-                                "-mm",          // metering mode
-                                "average",      // mode
+				//FIXME get from ExposureMeteringMode property
+                                //"-mm",          // metering mode
+                                //"average",      // mode
                                 "-th",          // thumbnail
                                 "none",         //  - none
                                 "-q",           // JPEG quality
@@ -466,6 +489,17 @@ void *capture (void *arg)
                                 "-o",
                                 tmpfilename,
 		};
+
+		// Image Size
+		arg_list[i++] = "-md";	// Mode 
+		char* is = getImageSize();
+		if (strcmp("2028x1520", is) == 0) 
+		{
+			arg_list[i++] = "2";	//  -  2028x1520 with 2x2 binning
+			
+		} else {
+			arg_list[i++] = "3";	//  -  4056x3040 unbinned
+		}
 
 		// Is Manual?
 		if (getProgramMode() == 1) {
@@ -494,14 +528,17 @@ void *capture (void *arg)
 				arg_list[i++] = "-r";		// Add raw data to end of jpeg
                                 arg_list[i++] = "-awb";         // auto white balance
                                 arg_list[i++] = "off";          //  - off
+				//FIXME only set awbgains if the whitebalance mode is 0x0001 (Manual)
                                 arg_list[i++] = "--awbgains";   // auto white balance gains
+				//FIXME get the gains from the RGBGain property
+                                //arg_list[i++] = "1,1";       //  - what's this?
                                 arg_list[i++] = "2,1.53";       //  - what's this?
 				arg_list[i++] = "-ex";		// auto exposure mode
 				arg_list[i++] = "off";		// - off (results in black image in jpg part)
 			} else {
 				asprintf(&siso, "%d", iso);	
 				arg_list[i++] = "-ISO";		// ISO
-				arg_list[i++] = iso;		// - as passed
+				arg_list[i++] = siso;		// - as passed
 			}
 		}
 		arg_list[i++] = NULL;
