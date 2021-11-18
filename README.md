@@ -3,6 +3,8 @@
 
 # uMTP-Responder
 
+This fork has added many features to allow a Raspberry Pi Zero with a HQ camera to appear as a DSLR to the host computer. It's currently a WIP but many features already work.
+
 ## Lightweight USB Media Transfer Protocol (MTP) responder daemon for GNU/Linux
 
 The uMTP-Responder allows files to be transferred to and from devices through the devices USB port.
